@@ -1,0 +1,27 @@
+Package: fishFingers
+Title: Prediction of Bioconcentration Factor in Fish from HRMS-Derived Structural Fingerprints
+Version: 0.1.0
+Authors@R: 
+    c(
+    person("Drew", "Szabo", email = "drew.szabo@york.ac.uk", comment = c(ORCID = "0000-0002-0089-9218"), role = c("aut", "cre")),
+    person("Katie", "Plaisted", email = "katie.plaisted@york.ac.uk", role = "aut"),
+    person("Alistair", "Boxall", email = "alistair.boxall@york.ac.uk", role = "aut"),
+    person("Jackie", "Mosely", email = "jackie.mosely@york.ac.uk", role = "aut")
+    )
+Description: Convert SMILES to structural fingerprints or use posterior probabilities from SIRIUS CSI:FingerID to structural fingerprints to serve as the input for the fishFingers model to predict BCF in fish.
+License: CC BY 4.0
+Imports:
+    dplyr,
+    magrittr,
+    stringr,
+    fingerprint,
+    caret,
+    data.table,
+    tibble,
+    webchem,
+    rcdk,
+    utils,
+    stats
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3

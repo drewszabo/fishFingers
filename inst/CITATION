@@ -1,0 +1,11 @@
+bibentry(
+  bibtype = "Article",
+  title = "fishFingers: Prioritisation of High Resolution Mass Spectrometry Features by Prediction of Bioconcentration Factors (BCF) in Fish Species",
+  author = c("Drew Szabo, Katie Plaisted, Alistair B.A. Boxall, Jackie Mosely"),
+  journal = "ChemXriv",
+  year = 2026,
+  volume = NULL,
+  number = NULL,
+  pages = NULL,
+  doi = NULL
+)
