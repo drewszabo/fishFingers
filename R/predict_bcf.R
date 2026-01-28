@@ -27,7 +27,7 @@ predict_bcf <- function(
     x,
     input = c("smiles", "sirius"),
     species = "Cyprinus carpio",
-    threshold = c("basic", "mc"),
+    threshold = c("mc"),
     topMost = TRUE,
     N = 10000,
     cutoff = 0.5
@@ -41,6 +41,10 @@ predict_bcf <- function(
     warning("Argument 'species' not provided. Defaulting to Cyprinus carpio.", call. = FALSE)
   }
 
+  if (input == "sirius" && missing(threshold)) {
+    warning("Argument 'threshold' not provided. Defaulting to 'mc'.", call. = FALSE)
+  }
+
   check_species(species)
 
   if (missing(x) || length(x) == 0) {
@@ -50,16 +54,23 @@ predict_bcf <- function(
   ## ---- model loading --------------------------------------------------------
   model_path <- system.file(
     "extdata",
-    "final_model.rds",
+    "fishFingers.json",
+    package = "fishFingers"
+  )
+
+  meta_path <- system.file(
+    "extdata",
+    "fishFingers_metadata.rds",
     package = "fishFingers"
   )
 
   if (model_path == "") {
-    stop("Model file 'final_model.rds' not found in inst/extdata. Try reinstalling fishFingers.",
+    stop("Model file 'fishFingers.json' not found in inst/extdata. Try reinstalling fishFingers.",
          call. = FALSE)
   }
 
-  model <- readRDS(model_path)
+  model <- xgboost::xgb.load(model_path)
+  meta <- readRDS(meta_path)
 
   ## ---- fingerprint generation ----------------------------------------------
   if (input == "smiles") {
@@ -140,9 +151,14 @@ predict_bcf <- function(
   fishFinger <- cbind(fingerprints, fish_rep)
 
   ## ---- prediction -----------------------------------------------------------
+  new_x <- as.matrix(fishFinger)
+  storage.mode(new_x) <- "numeric"
+  
+  dmat <- xgb.DMatrix(new_x)
+  
   pred <- predict(
     model,
-    newdata = fishFinger
+    newdata = dmat
   )
 
   ## ---- output ---------------------------------------------------------------

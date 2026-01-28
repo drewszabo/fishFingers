@@ -8,4 +8,9 @@
 #' @importFrom dplyr bind_cols mutate
 #' @importFrom stringr str_replace
 #' @importFrom stats predict rbinom
+#' @importFrom xgboost xgb.load xgb.DMatrix
+#' @importFrom webchem is.smiles
+#' @importFrom jsonlite fromJSON
+#' @importFrom caret preProcess predict
+#' @importFrom purrr map_dfr
 NULL

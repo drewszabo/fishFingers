@@ -8,7 +8,7 @@ predict_bcf(
   x,
   input = c("smiles", "sirius"),
   species = "Cyprinus carpio",
-  threshold = c("basic", "mc"),
+  threshold = c("mc"),
   topMost = TRUE,
   N = 10000,
   cutoff = 0.5
