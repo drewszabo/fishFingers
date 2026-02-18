@@ -13,7 +13,7 @@ remotes::install_github("drewszabo/fishFingers")
 
 fishFingers provides:
 * Automated generation of structural fingerprints from SMILES
-* Import predicted fingerprints from SIRIUS CSI:FingerID
+* Import predicted fingerprints from SIRIUS CSI:FingerID v5.x
 * A pre-trained machine-learning model for BCF prediction
 * A simple interface for single or multiple chemicals
 * Internal reference data stored in inst/extdata
@@ -38,6 +38,7 @@ pred
 
 ## Input requirements
 * SMILES should be valid and parseable by rcdk (use `webchem::is.smiles()` to check your strings beforehand)
+* SIRIUS project folder directory fro versions v5.x only (tested with v5.8.4,support coming soon for v6.x)
 * Predictions are most reliable for chemicals withing the applicability domain from the training data
 * Only species in the training and test sets are avialable for prediction at this time (use `fishFingers::check_species(list = TRUE)` for complete list)
 
