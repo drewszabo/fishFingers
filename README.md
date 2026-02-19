@@ -19,7 +19,8 @@ fishFingers provides:
 * Internal reference data stored in inst/extdata
 * Development scripts and results are stored in dev/
 
-## Quick start
+## SMILES Instructions
+The `predict_bcf()` function will accept a list of SMILES as characters. For very long lists of SMILES, this may take some time to complete the fingerprint calculations.
 
 ```
 library(fishFingers)
@@ -36,7 +37,35 @@ pred <- predict_bcf(smiles, "smiles", "Cyprinus carpio")
 pred
 ```
 
-## Input requirements
+## SIRIUS Instructions
+BCF predictions in fishFingers require structural fingerprints generated using SIRIUS v5.x.
+⚠️ Only SIRIUS CSI:FingerID v5.x is currently supported. Support for v6.x is in development.
+
+### Requirements
+* Compute SIRIUS (molecular formula identification), and CSI:FingerID (fingerprint prediction) for features with MS2.
+* Save the SIRIUS project to an accessable directory.
+* Ensure each feature in the the project file has a `fingerprints` file.
+```
+my_sirius_project/
+├── compound_001/
+│   ├── structure_candidates.tsv
+│   ├── fingerprints
+│   └── spectrum.ms
+└── ...
+```
+
+### Example
+```
+# Predict logBCF from SIRIUS project files
+pred <- predict_bcf(
+  "<sirius-project-path>", # eg "C:/Data/New Project/sirius/"
+  input = "sirius",
+  species = "Cyprinus carpio",
+  threshold = "mc" # use monte carlo simulation for posterior probability conversion
+  )
+```
+
+## General input requirements
 * SMILES should be valid and parseable by rcdk (use `webchem::is.smiles()` to check your strings beforehand)
 * SIRIUS project folder directory fro versions v5.x only (tested with v5.8.4,support coming soon for v6.x)
 * Predictions are most reliable for chemicals withing the applicability domain from the training data

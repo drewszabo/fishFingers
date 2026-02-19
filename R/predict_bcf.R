@@ -58,11 +58,11 @@ predict_bcf <- function(
     package = "fishFingers"
   )
 
-  meta_path <- system.file(
-    "extdata",
-    "fishFingers_metadata.rds",
-    package = "fishFingers"
-  )
+  #meta_path <- system.file(
+  #  "extdata",
+  #  "fishFingers_metadata.rds",
+  #  package = "fishFingers"
+  #)
 
   if (model_path == "") {
     stop("Model file 'fishFingers.json' not found in inst/extdata. Try reinstalling fishFingers.",
@@ -70,7 +70,7 @@ predict_bcf <- function(
   }
 
   model <- xgboost::xgb.load(model_path)
-  meta <- readRDS(meta_path)
+  #meta <- readRDS(meta_path)
 
   ## ---- fingerprint generation ----------------------------------------------
   if (input == "smiles") {
@@ -153,9 +153,9 @@ predict_bcf <- function(
   ## ---- prediction -----------------------------------------------------------
   new_x <- as.matrix(fishFinger)
   storage.mode(new_x) <- "numeric"
-  
-  dmat <- xgb.DMatrix(new_x)
-  
+
+  dmat <- xgboost::xgb.DMatrix(new_x)
+
   pred <- predict(
     model,
     newdata = dmat
