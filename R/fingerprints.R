@@ -122,7 +122,7 @@ read_sirius_fingerprints <- function(sirius_project_dir, topMost = TRUE) {
     }
 
     scoresZip <- list.files(feature, "scores", full.names = TRUE)
-    scoresZip <- fpZip[!file.info(scoresZip)$isdir]
+    scoresZip <- scoresZip[!file.info(scoresZip)$isdir]
     if (length(scoresZip) == 0) {
       next
     }
