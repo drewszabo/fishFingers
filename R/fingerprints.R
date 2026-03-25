@@ -209,9 +209,19 @@ read_sirius_fingerprints <- function(sirius_project_dir, topMost = TRUE) {
 
   result_dt <- data.table::rbindlist(result_list[seq_len(out_i - 1L)], use.names = TRUE, fill = TRUE)
   fp_names <- fpIndex$fpName[fpIndex$fpType != "ecfp6"]
-  fp_names_present <- intersect(fp_names, names(result_dt))
-  result_dt <- result_dt[, c("feature_id", "compound", fp_names_present), with = FALSE]
-  for (col in fp_names_present) {
+
+  # Add missing columns explicitly
+  missing_cols <- setdiff(fp_names, names(result_dt))
+
+  for (col in missing_cols) {
+    result_dt[, (col) := 0L]
+  }
+
+  # Now enforce full column set and order
+  result_dt <- result_dt[, c("feature_id", "compound", fp_names), with = FALSE]
+
+  # Replace NA with 0
+  for (col in fp_names) {
     set(result_dt, which(is.na(result_dt[[col]])), col, 0L)
   }
 
