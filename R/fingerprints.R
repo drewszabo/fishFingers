@@ -242,7 +242,7 @@ read_sirius5_fingerprints <- function(sirius_project_dir, topMost = TRUE) {
 #' @param topMost logical; if TRUE, then only import the top 1 ranked candidate from each result
 #' @return a data frame with file, molecular_formula and posterior probability vectors (named by fingerprint column)
 #' @export
-read_sirius_fingerprints <- function(path = NULL, topMost = TRUE) {
+read_sirius_fingerprints <- function(path = NULL, topMost = TRUE, charge = 1) {
 
   # Initialize SiriusSDK
   sdk <- SiriusSDK$new()
