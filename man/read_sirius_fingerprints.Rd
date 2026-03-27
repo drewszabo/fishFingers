@@ -4,7 +4,7 @@
 \alias{read_sirius_fingerprints}
 \title{Read SIRIUS fingerprints from active REST API}
 \usage{
-read_sirius_fingerprints(path = NULL, topMost = TRUE)
+read_sirius_fingerprints(path = NULL, topMost = TRUE, charge = 1)
 }
 \arguments{
 \item{path}{character; path of .sirius project file or directory (if NULL, will attempt to connect to any open SIRIUS project)}
