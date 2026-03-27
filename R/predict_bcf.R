@@ -5,7 +5,7 @@
 #' project directory. Internally generates fingerprints, applies the trained
 #' XGBoost model, and optionally performs Monte Carlo thresholding.
 #'
-#' @param x Character vector of SMILES or a file path to a SIRIUS project.
+#' @param x Character vector of SMILES (when input="smiles") or path to SIRIUS project directory (when input="sirius"). If NULL and input="sirius", selects an open SIRIUS project interactively.
 #' @param input Character string, either "smiles" or "sirius".
 #' @param species Character string specifying the species.
 #' @param threshold Character string specifying thresholding approach:
@@ -18,19 +18,20 @@
 #' @export
 #'
 #' @examples
+#' # predict BCF from SMILES
 #' predict_bcf(
-#'   x = c("CCO", "CC(=O)O"),
+#'   x = c("CCNC1=NC(=NC(=N1)Cl)NC(C)C", "CCNC1=NC(=NC(=N1)Cl)NCC"), # atrazine and simazine
 #'   input = "smiles",
 #'   species = "Cyprinus carpio"
 #' )
 predict_bcf <- function(
-    x,
-    input = c("smiles", "sirius"),
-    species = "Cyprinus carpio",
-    threshold = c("mc"),
-    topMost = TRUE,
-    N = 10000,
-    cutoff = 0.5
+  x = NULL,
+  input = c("smiles", "sirius"),
+  species = "Cyprinus carpio",
+  threshold = "mc",
+  topMost = TRUE,
+  N = 10000,
+  cutoff = 0.5
 ) {
 
   ## ---- argument validation --------------------------------------------------
@@ -47,8 +48,12 @@ predict_bcf <- function(
 
   check_species(species)
 
-  if (missing(x) || length(x) == 0) {
+  if (is.null(x) && input == "smiles") {
     stop("Argument 'x' must not be empty.", call. = FALSE)
+  }
+
+  if (missing(input)) {
+    stop("Argument 'input' must be specified as either 'smiles' or 'sirius'.", call. = FALSE)
   }
 
   ## ---- model loading --------------------------------------------------------
@@ -69,7 +74,7 @@ predict_bcf <- function(
          call. = FALSE)
   }
 
-  model <- xgboost::xgb.load(model_path)
+  model <- xgb.load(model_path)
   #meta <- readRDS(meta_path)
 
   ## ---- fingerprint generation ----------------------------------------------
@@ -103,23 +108,13 @@ predict_bcf <- function(
 
   } else if (input == "sirius") {
 
-    if (!is.character(x) || length(x) != 1L) {
-      stop("For input = 'sirius', x must be a single file path.",
-           call. = FALSE)
-    }
-
-    if (!dir.exists(x)) {
-      stop("SIRIUS project directory does not exist: ", x,
-           call. = FALSE)
-    }
-
     post_prob_matrix <- read_sirius_fingerprints(
-      sirius_project_dir = x,
+      x,
       topMost = topMost
     )
 
     input_df <- data.frame(
-      post_prob_matrix[,1:2]
+      post_prob_matrix[, 1:2]
     )
   }
 

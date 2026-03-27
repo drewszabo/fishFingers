@@ -1,4 +1,4 @@
-# R/fingerprints.R
+#' R/fingerprints.R
 #'
 #' Calculate fingerprints from SMILES
 #'
@@ -81,15 +81,18 @@ generate_fingerprints <- function(smiles) {
 
 
 
-#' Read SIRIUS fingerprints from a project directory
+#' Read SIRIUS v5.x fingerprints from a project directory
 #'
 #' This function imports posterior probabilities from files in the SIRIUS CSI:FingerID project directory.
 #'
+#' @description This function is deprecated and will be removed in a future version. Please use `read_sirius6_fingerprints()` instead for SIRIUS v6.x projects.
+#' @details Deprecated in v0.2.0 - SIRIUS v5.x is no longer supported. Please use `read_sirius6_fingerprints()` for SIRIUS v6.x projects.
 #' @param sirius_project_dir character; path to the SIRIUS project folder
 #' @param topMost logical; if TRUE, then only import the top 1 ranked candidate from each result
 #' @return a data frame with file, molecular_formula and posterior probability vectors (named by fingerprint column)
+#' @keywords internal
 #' @export
-read_sirius_fingerprints <- function(sirius_project_dir, topMost = TRUE) {
+read_sirius5_fingerprints <- function(sirius_project_dir, topMost = TRUE) {
 
   tmp <- make_temp_dir()
   on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
@@ -229,3 +232,36 @@ read_sirius_fingerprints <- function(sirius_project_dir, topMost = TRUE) {
 }
 
 
+
+
+#' Read SIRIUS fingerprints from active REST API
+#'
+#' This function imports posterior probabilities from HTTPS API started by SIRIUS v6.x. The API must be active and accessible at the specified URL.
+#'
+#' @param path character; path of .sirius project file or directory (if NULL, will attempt to connect to any open SIRIUS project)
+#' @param topMost logical; if TRUE, then only import the top 1 ranked candidate from each result
+#' @return a data frame with file, molecular_formula and posterior probability vectors (named by fingerprint column)
+#' @export
+read_sirius_fingerprints <- function(path = NULL, topMost = TRUE) {
+
+  project_id <- sirius_init(path)
+
+  # Get aligned features from the API
+  features <- api$features_api$GetAlignedFeatures(project_id)
+  cat("Found", length(features), "aligned features\n")
+
+  # Get the reference fp index from the project
+  # Its unclear if this changes depending on the presence/absence of fp in the data set
+  fingerid_data <- api$projects_api$GetFingerIdData(project_id, charge = charge)
+  fingerid_data$fpName <- paste0("Un", fingerid_data$absoluteIndex)
+
+  if (topMost == TRUE) {
+    cat("Importing fingerprints for top-ranked candidates only\n")
+    top_fp <- extract_fingerprints(features, topMost = TRUE)
+    return(top_fp)
+} else {
+    cat("Importing fingerprints for all candidates\n")
+    all_fp <- extract_fingerprints(features, topMost = FALSE)
+    return(all_fp)
+  }
+}

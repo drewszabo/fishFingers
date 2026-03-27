@@ -1,4 +1,4 @@
-# R/package.R
+#' R/package.R
 #' @import data.table
 #' @importFrom utils read.csv unzip
 #' @importFrom rcdk parse.smiles get.fingerprint
@@ -12,5 +12,6 @@
 #' @importFrom webchem is.smiles
 #' @importFrom jsonlite fromJSON
 #' @importFrom caret preProcess predict
-#' @importFrom purrr map_dfr
+#' @importFrom purrr map_dfr map_df
+#' @importFrom RSirius SiriusSDK
 NULL

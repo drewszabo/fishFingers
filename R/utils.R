@@ -72,3 +72,135 @@ make_species_matrix <- function(species) {
     dimnames = list(NULL, levels(species_factor))
   )
 }
+
+
+sirius_init <- function(path = NULL) {
+
+  # Check if path is provided and valid
+  if (!is.null(path)) {
+    if (!dir.exists(path)) {
+      stop("Provided path does not exist: ", path)
+    } else if (length(list.files(path, pattern = "\\.sirius$")) == 0) {
+      stop("Provided path does not appear to be a valid SIRIUS project directory: ", path)
+    }
+  }
+  
+  # Initialize SiriusSDK
+  sdk <- SiriusSDK$new()
+  api <- sdk$attach_or_start_sirius()
+
+  # Get and select project information
+  if(is.null(path)) {
+    projects <- api$projects_api$GetProjects()
+  } else {
+    projects <- api$projects_api$GetProject(path)
+  }
+
+  if (length(projects) == 0) {
+    stop("No projects found on localhost.")
+  } else if (length(projects) == 1) {
+    project_id <- projects[[1]][["projectId"]]
+    print("Found 1 open project")
+  } else {
+    projects_df <- map_df(projects, function(p) {
+      tibble(id  = p$projectId, loc = p$location)
+    })
+    cat("\nAvailable Projects:\n")
+    for (i in seq_len(nrow(projects_df))) {
+      cat(sprintf("[%d] %s (%s)\n", i, projects_df$id[i],
+                  projects_df$loc[i]))
+    }
+    selection <- as.integer(readline(prompt = "\nSelect project number: "))
+    if (is.na(selection) || selection < 1 ||
+        selection > nrow(projects_df)) {
+      stop("Invalid selection.")
+    }
+    project_id <- projects_df$id[selection]
+    cat("Selected project:", project_id, "\n")
+  }
+
+  if (length(project_id) == 0) {
+    stop("No project selected.")
+  }
+
+  project_id
+}
+
+
+extract_fingerprints <- function(features, topMost = TRUE) {
+
+  aligned_id <- as.character()
+  for (i in seq_along(1:length(features))) {
+    aligned_id <- append(aligned_id, features[[i]]$alignedFeatureId)
+  }
+  
+  # Retrieve all formula candidates
+  df <- map_df(aligned_id, function(fid) {
+    # Get formula candidates for this aligned feature
+    formulas <- api$features_api$GetFormulaCandidates(project_id, fid)
+    
+    if (length(formulas) == 0)
+      return(NULL)
+    
+    # Convert formulas to a tibble
+    map_df(formulas, function(f) {
+      tibble(
+        aligned_id = fid,
+        formula_id = f$formulaId,
+        mol_form   = f$molecularFormula,
+        rank       = f$rank %||% NA_real_,
+        score_norm = f$siriusScoreNormalized %||% NA_real_,
+        score      = f$siriusScore %||% NA_real_
+      )
+    })
+  })
+  
+  if (topMost == TRUE) {
+    # Select top‑ranked formula by rank
+    df <- df %>%
+      filter(rank == 1)
+  }
+
+  # Retrieve fingerprint prediction for selected formulas
+  all_fps <- map_df(seq_len(nrow(df)), function(i) {
+    # Skip samples without any calculated fps
+    res <- tryCatch({
+      api$features_api$GetFingerprintPrediction(project_id, df$aligned_id[i], df$formula_id[i])
+    }, error = function(e) {
+      warning(
+        sprintf(
+          "Skipping feature %s formula %s: %s",
+          df$aligned_id[i],
+          df$formula_id[i],
+          e$message
+        )
+      )
+      return(NULL)
+    })
+    
+    # If API failed, skip this iteration
+    if (is.null(res) || length(res) == 0)
+      return(NULL)
+    
+    # Convert probabilities to characters
+    probs <- as.character(res)
+    
+    # Make a single-row tibble (1 row, N columns)
+    df <- as_tibble(t(probs))
+    names(df) <- fingerid_data$fpName  # 5000 column names
+    
+    # Add identifiers
+    df %>%
+      mutate(
+        aligned_id = df$aligned_id[i],
+        formula_id = df$formula_id[i],
+        molecularFormula = df$mol_form[i]
+      ) %>%
+      select(aligned_id, formula_id, molecularFormula, everything())
+  })
+  
+  
+  
+  return(all_fps)
+  
+}

@@ -5,17 +5,17 @@
 \title{Predict bioconcentration factor (BCF)}
 \usage{
 predict_bcf(
-  x,
+  x = NULL,
   input = c("smiles", "sirius"),
   species = "Cyprinus carpio",
-  threshold = c("mc"),
+  threshold = "mc",
   topMost = TRUE,
   N = 10000,
   cutoff = 0.5
 )
 }
 \arguments{
-\item{x}{Character vector of SMILES or a file path to a SIRIUS project.}
+\item{x}{Character vector of SMILES (when input="smiles") or path to SIRIUS project directory (when input="sirius"). If NULL and input="sirius", selects an open SIRIUS project interactively.}
 
 \item{input}{Character string, either "smiles" or "sirius".}
 
@@ -39,8 +39,9 @@ project directory. Internally generates fingerprints, applies the trained
 XGBoost model, and optionally performs Monte Carlo thresholding.
 }
 \examples{
+# predict BCF from SMILES
 predict_bcf(
-  x = c("CCO", "CC(=O)O"),
+  x = c("CCNC1=NC(=NC(=N1)Cl)NC(C)C", "CCNC1=NC(=NC(=N1)Cl)NCC"), # atrazine and simazine
   input = "smiles",
   species = "Cyprinus carpio"
 )

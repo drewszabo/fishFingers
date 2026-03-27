@@ -2,7 +2,7 @@
 % Please edit documentation in R/fingerprints.R
 \name{generate_fingerprints}
 \alias{generate_fingerprints}
-\title{Calculate fingerprints from SMILES}
+\title{R/fingerprints.R}
 \usage{
 generate_fingerprints(smiles)
 }
