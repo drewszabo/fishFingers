@@ -3,7 +3,7 @@
 #' @importFrom utils read.csv unzip
 #' @importFrom rcdk parse.smiles get.fingerprint
 #' @importFrom fingerprint fp.to.matrix
-#' @importFrom tibble as_tibble
+#' @importFrom tibble as_tibble tibble
 #' @importFrom magrittr %>%
 #' @importFrom dplyr bind_cols mutate
 #' @importFrom stringr str_replace
