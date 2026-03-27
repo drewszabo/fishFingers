@@ -74,7 +74,7 @@ make_species_matrix <- function(species) {
 }
 
 
-sirius_init <- function(path = NULL) {
+sirius_init <- function(path = NULL, api) {
 
   # Check if path is provided and valid
   if (!is.null(path)) {
@@ -123,7 +123,7 @@ sirius_init <- function(path = NULL) {
 }
 
 
-extract_fingerprints <- function(features, topMost = TRUE) {
+extract_fingerprints <- function(features, api, fingerid_data, project_id, topMost = TRUE) {
 
   aligned_id <- as.character()
   for (i in seq_along(1:length(features))) {

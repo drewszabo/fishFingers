@@ -248,7 +248,7 @@ read_sirius_fingerprints <- function(path = NULL, topMost = TRUE) {
   sdk <- SiriusSDK$new()
   api <- sdk$attach_or_start_sirius()
 
-  project_id <- sirius_init(path)
+  project_id <- sirius_init(path, api)
 
   # Get aligned features from the API
   features <- api$features_api$GetAlignedFeatures(project_id)
@@ -261,11 +261,11 @@ read_sirius_fingerprints <- function(path = NULL, topMost = TRUE) {
 
   if (topMost == TRUE) {
     cat("Importing fingerprints for top-ranked candidates only\n")
-    top_fp <- extract_fingerprints(features, topMost = TRUE)
+    top_fp <- extract_fingerprints(features, api, fingerid_data, project_id, topMost = TRUE)
     return(top_fp)
 } else {
     cat("Importing fingerprints for all candidates\n")
-    all_fp <- extract_fingerprints(features, topMost = FALSE)
+    all_fp <- extract_fingerprints(features, api, fingerid_data, project_id, topMost = FALSE)
     return(all_fp)
   }
 }
