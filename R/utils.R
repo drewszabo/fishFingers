@@ -144,9 +144,9 @@ extract_fingerprints <- function(features, api, fingerid_data, project_id, topMo
         aligned_id = fid,
         formula_id = f$formulaId,
         mol_form   = f$molecularFormula,
-        rank       = f$rank %||% NA_real_,
-        score_norm = f$siriusScoreNormalized %||% NA_real_,
-        score      = f$siriusScore %||% NA_real_
+        rank       = as.numeric(f$rank %||% NA_real_),
+        score_norm = as.numeric(f$siriusScoreNormalized %||% NA_real_),
+        score      = as.numeric(f$siriusScore %||% NA_real_)
       )
     })
   })

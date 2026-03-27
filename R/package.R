@@ -11,7 +11,7 @@
 #' @importFrom xgboost xgb.load xgb.DMatrix
 #' @importFrom webchem is.smiles
 #' @importFrom jsonlite fromJSON
-#' @importFrom caret preProcess predict
+#' @importFrom caret preProcess
 #' @importFrom purrr map_dfr map_df
 #' @importFrom RSirius SiriusSDK
 NULL
