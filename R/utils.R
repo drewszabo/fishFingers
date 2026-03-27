@@ -144,17 +144,17 @@ extract_fingerprints <- function(features, api, fingerid_data, project_id, topMo
         aligned_id = fid,
         formula_id = f$formulaId,
         mol_form   = f$molecularFormula,
-        rank       = as.numeric(f$rank %||% NA_real_),
-        score_norm = as.numeric(f$siriusScoreNormalized %||% NA_real_),
-        score      = as.numeric(f$siriusScore %||% NA_real_)
+        rank       = as.numeric(unlist(f$rank %||% NA_real_)),
+        score_norm = as.numeric(unlist(f$siriusScoreNormalized %||% NA_real_)),
+        score      = as.numeric(unlist(f$siriusScore %||% NA_real_))
       )
     })
   })
   
   if (topMost == TRUE) {
-    # Select top‑ranked formula by rank
+    # Select top‑ranked formula by rank, excluding NA ranks
     df <- df %>%
-      filter(rank == 1)
+      filter(!is.na(rank), rank == 1)
   }
 
   # Retrieve fingerprint prediction for selected formulas
