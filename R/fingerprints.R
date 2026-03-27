@@ -244,6 +244,10 @@ read_sirius5_fingerprints <- function(sirius_project_dir, topMost = TRUE) {
 #' @export
 read_sirius_fingerprints <- function(path = NULL, topMost = TRUE) {
 
+  # Initialize SiriusSDK
+  sdk <- SiriusSDK$new()
+  api <- sdk$attach_or_start_sirius()
+
   project_id <- sirius_init(path)
 
   # Get aligned features from the API

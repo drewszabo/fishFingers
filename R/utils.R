@@ -84,10 +84,6 @@ sirius_init <- function(path = NULL) {
       stop("Provided path does not appear to be a valid SIRIUS project directory: ", path)
     }
   }
-  
-  # Initialize SiriusSDK
-  sdk <- SiriusSDK$new()
-  api <- sdk$attach_or_start_sirius()
 
   # Get and select project information
   if(is.null(path)) {
