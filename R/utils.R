@@ -154,7 +154,9 @@ extract_fingerprints <- function(features, api, fingerid_data, project_id, topMo
   if (topMost == TRUE) {
     # Select top‑ranked formula by rank, excluding NA ranks
     df <- df %>%
-      filter(!is.na(rank), rank == 1)
+      filter(!is.na(rank)) %>%
+      arrange(rank) %>%
+      slice(1)
   }
 
   # Retrieve fingerprint prediction for selected formulas

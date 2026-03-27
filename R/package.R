@@ -5,7 +5,7 @@
 #' @importFrom fingerprint fp.to.matrix
 #' @importFrom tibble as_tibble tibble
 #' @importFrom magrittr %>%
-#' @importFrom dplyr bind_cols mutate filter
+#' @importFrom dplyr bind_cols mutate filter arrange slice
 #' @importFrom stringr str_replace
 #' @importFrom stats predict rbinom
 #' @importFrom xgboost xgb.load xgb.DMatrix
