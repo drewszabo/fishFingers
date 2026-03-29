@@ -74,7 +74,7 @@ predict_bcf <- function(
          call. = FALSE)
   }
 
-  model <- xgb.load(model_path)
+  model <- xgboost::xgb.load(model_path)
   #meta <- readRDS(meta_path)
 
   ## ---- fingerprint generation ----------------------------------------------
