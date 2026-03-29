@@ -253,6 +253,9 @@ read_sirius_fingerprints <- function(path = NULL, topMost = TRUE, charge = 1) {
   # Get aligned features from the API
   features <- api$features_api$GetAlignedFeatures(project_id)
   cat("Found", length(features), "aligned features\n")
+  if (length(features) == 0) {
+    stop()
+  }
 
   # Get the reference fp index from the project
   # Its unclear if this changes depending on the presence/absence of fp in the data set
