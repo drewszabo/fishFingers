@@ -11,7 +11,8 @@ predict_bcf(
   threshold = "mc",
   topMost = TRUE,
   N = 10000,
-  cutoff = 0.5
+  cutoff = 0.5,
+  charge = 1
 )
 }
 \arguments{
@@ -28,7 +29,8 @@ predict_bcf(
 
 \item{N}{integer; if threshold = "mc" this number specifies the number of Monte Carlo simulations performed. Higher iterations take longer.}
 
-\item{cutoff}{double; if threshold = "mc" this ratio specifies the cutoff after MC simulation.}
+\item{cutoff}{double; if threshold = "mc" this ratio specifies the cutoff after MC simulation.
+.@param charge integer; if input = "sirius", this specifies the charge state of the features to be predicted. Default is 1.}
 }
 \value{
 A data.frame containing the original input and predicted BCF.

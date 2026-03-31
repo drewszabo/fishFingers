@@ -13,7 +13,8 @@
 #' @param topMost logical; if input = "sirius", then select if the top ranked or all candidates are predicted.
 #' @param N integer; if threshold = "mc" this number specifies the number of Monte Carlo simulations performed. Higher iterations take longer.
 #' @param cutoff double; if threshold = "mc" this ratio specifies the cutoff after MC simulation.
-#'
+#'.@param charge integer; if input = "sirius", this specifies the charge state of the features to be predicted. Default is 1.
+#' 
 #' @return A data.frame containing the original input and predicted BCF.
 #' @export
 #'
@@ -31,7 +32,8 @@ predict_bcf <- function(
   threshold = "mc",
   topMost = TRUE,
   N = 10000,
-  cutoff = 0.5
+  cutoff = 0.5,
+  charge = 1
 ) {
 
   ## ---- argument validation --------------------------------------------------
@@ -62,6 +64,15 @@ predict_bcf <- function(
     "fishFingers.json",
     package = "fishFingers"
   )
+
+  # Load fpIndex to filter fingerprints to model features
+  fp_index_path <- system.file(
+    "extdata",
+    "fpIndex.csv",
+    package = "fishFingers"
+  )
+  fpIndex <- read.csv(fp_index_path, check.names = FALSE)
+  fp_names <- fpIndex$fpName[fpIndex$fpType != "ecfp6"]
 
   #meta_path <- system.file(
   #  "extdata",
@@ -109,12 +120,27 @@ predict_bcf <- function(
   } else if (input == "sirius") {
 
     post_prob_matrix <- read_sirius_fingerprints(
-      x,
-      topMost = topMost
+      path = x,
+      topMost = topMost,
+      charge = charge
     )
 
+    # Convert to data.frame (not data.table) to avoid data.table issues
+    post_prob_matrix <- base::as.data.frame(post_prob_matrix)
+    
+    # Find missing columns and add them with 0 values
+    missing_cols <- base::setdiff(fp_names, base::names(post_prob_matrix))
+    
+    for (col in missing_cols) {
+      post_prob_matrix[[col]] <- 0L
+    }
+    
+    # Reorder to metadata columns + fp_names order
+    metadata_cols <- base::names(post_prob_matrix)[1:3]
+    post_prob_matrix <- post_prob_matrix[, c(metadata_cols, fp_names), drop = FALSE]
+
     input_df <- data.frame(
-      post_prob_matrix[, 1:2]
+      post_prob_matrix[, 1:3]
     )
   }
 

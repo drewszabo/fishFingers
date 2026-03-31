@@ -244,9 +244,36 @@ read_sirius5_fingerprints <- function(sirius_project_dir, topMost = TRUE) {
 #' @export
 read_sirius_fingerprints <- function(path = NULL, topMost = TRUE, charge = 1) {
 
-  # Initialize SiriusSDK
+  # Create a local SDK object each call.
   sdk <- SiriusSDK$new()
-  api <- sdk$attach_or_start_sirius()
+  api <- NULL
+
+  # Try to attach to an existing SIRIUS instance first.
+  api <- tryCatch(
+    sdk$attach_to_sirius(sirius_major_version = 6),
+    error = function(e) NULL
+  )
+
+  if (!is.null(api)) {
+    healthy <- tryCatch(
+      api$actuator_api$Health()$status == "UP",
+      error = function(e) FALSE
+    )
+    if (!healthy) {
+      api <- NULL
+    }
+  }
+
+  # If not attached or unhealthy, start or attach-or-start.
+  if (is.null(api)) {
+    api <- tryCatch(
+      sdk$attach_or_start_sirius(),
+      error = function(e) NULL
+    )
+    if (is.null(api)) {
+      stop("Unable to connect to SIRIUS. Ensure SIRIUS is running or available in PATH; set SIRIUS_EXE if needed.")
+    }
+  }
 
   project_id <- sirius_init(path, api)
 
@@ -270,5 +297,6 @@ read_sirius_fingerprints <- function(path = NULL, topMost = TRUE, charge = 1) {
     cat("Importing fingerprints for all candidates\n")
     all_fp <- extract_fingerprints(features, api, fingerid_data, project_id, topMost = FALSE)
     return(all_fp)
+    
   }
 }

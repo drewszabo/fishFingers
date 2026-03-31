@@ -7,6 +7,23 @@ generate_mc_matrix <- function(prob_matrix) {
 
   prob_matrix <- as.matrix(prob_matrix)
 
+  if (!is.numeric(prob_matrix)) {
+    prob_matrix <- matrix(
+      as.numeric(prob_matrix),
+      nrow = nrow(prob_matrix),
+      ncol = ncol(prob_matrix),
+      dimnames = dimnames(prob_matrix)
+    )
+  }
+
+  if (any(is.na(prob_matrix))) {
+    stop("prob_matrix contains NA values; cannot generate Monte Carlo matrix.")
+  }
+
+  if (any(prob_matrix < 0 | prob_matrix > 1)) {
+    stop("prob_matrix values must be between 0 and 1.")
+  }
+  
   nr <- nrow(prob_matrix)
   nc <- ncol(prob_matrix)
 
@@ -77,7 +94,7 @@ fishFingers_mc <- function(x,
   }
 
   prob_matrix <- as.matrix(
-    as.data.frame(x[, ..prob_cols, drop = FALSE])
+    as.data.frame(x[, prob_cols, drop = FALSE])
   )
 
   bin_matrix <- generate_best_mc_binary(

@@ -96,7 +96,7 @@ sirius_init <- function(path = NULL, api) {
     stop("No projects found on localhost.")
   } else if (length(projects) == 1) {
     project_id <- projects[[1]][["projectId"]]
-    print("Found 1 open project")
+    cat("Found 1 open project\n")
   } else {
     projects_df <- map_df(projects, function(p) {
       tibble(id  = p$projectId, loc = p$location)
@@ -154,41 +154,37 @@ extract_fingerprints <- function(features, api, fingerid_data, project_id, topMo
   if (topMost == TRUE) {
     # Select top‑ranked formula by rank, excluding NA ranks
     df <- df %>%
-      filter(!is.na(rank)) %>%
-      arrange(rank) %>%
-      slice(1)
+      group_by(aligned_id) %>%
+      filter(rank == 1)
   }
 
   # Retrieve fingerprint prediction for selected formulas
+  failed_count <- 0
   all_fps <- map_df(seq_len(nrow(df)), function(i) {
     # Skip samples without any calculated fps
     res <- tryCatch({
       api$features_api$GetFingerprintPrediction(project_id, df$aligned_id[i], df$formula_id[i])
     }, error = function(e) {
-      warning(
-        sprintf(
-          "Skipping feature %s formula %s: %s",
-          df$aligned_id[i],
-          df$formula_id[i],
-          e$message
-        )
-      )
+      # Increment failure count instead of warning immediately
+      failed_count <<- failed_count + 1
       return(NULL)
     })
     
     # If API failed, skip this iteration
-    if (is.null(res) || length(res) == 0)
+    if (is.null(res) || length(res) == 0) {
+      failed_count <<- failed_count + 1
       return(NULL)
+    }
     
     # Convert probabilities to characters
     probs <- as.character(res)
     
     # Make a single-row tibble (1 row, N columns)
-    df <- as_tibble(t(probs))
-    names(df) <- fingerid_data$fpName  # 5000 column names
+    fp_df <- as_tibble(t(probs))
+    names(fp_df) <- fingerid_data$fpName  # 5000 column names
     
     # Add identifiers
-    df %>%
+    fp_df %>%
       mutate(
         aligned_id = df$aligned_id[i],
         formula_id = df$formula_id[i],
@@ -197,7 +193,10 @@ extract_fingerprints <- function(features, api, fingerid_data, project_id, topMo
       select(aligned_id, formula_id, molecularFormula, everything())
   })
   
-  
+  # Warn once with total failed count
+  if (failed_count > 0) {
+    warning(sprintf("%d feature(s) were omitted due to API failures or missing fingerprints.", failed_count))
+  }
   
   return(all_fps)
   

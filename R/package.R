@@ -1,12 +1,13 @@
 #' R/package.R
 #' @import data.table
+#' @importFrom base as.matrix matrix as.data.frame intersect
 #' @importFrom utils read.csv unzip
 #' @importFrom rcdk parse.smiles get.fingerprint
 #' @importFrom fingerprint fp.to.matrix
 #' @importFrom tibble as_tibble tibble
 #' @importFrom magrittr %>%
-#' @importFrom dplyr bind_cols mutate filter arrange slice select
-#' @importFrom stringr str_replace
+#' @importFrom dplyr bind_cols mutate filter arrange slice select group_by summarise ungroup
+#' @importFrom stringr str_replace str_detect str_trim
 #' @importFrom stats predict rbinom
 #' @importFrom xgboost xgb.load xgb.DMatrix
 #' @importFrom webchem is.smiles
