@@ -201,3 +201,15 @@ extract_fingerprints <- function(features, api, fingerid_data, project_id, topMo
   return(all_fps)
   
 }
+
+# Function to calculate max Tanimoto similarity for each query against all training
+calc_max_tanimoto <- function(query, training_matrix) {
+
+  intersection <- as.numeric(training_matrix %*% query)
+  ones_query <- sum(query)
+  ones_ref <- rowSums(training_matrix)
+  union <- ones_ref + ones_query - intersection
+  
+  tanimoto <- intersection / union
+  max(tanimoto, na.rm = TRUE)
+}

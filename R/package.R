@@ -6,7 +6,7 @@
 #' @importFrom fingerprint fp.to.matrix
 #' @importFrom tibble as_tibble tibble
 #' @importFrom magrittr %>%
-#' @importFrom dplyr bind_cols mutate filter arrange slice select group_by summarise ungroup
+#' @importFrom dplyr bind_cols mutate filter arrange slice select group_by case_when
 #' @importFrom stringr str_replace str_detect str_trim
 #' @importFrom stats predict rbinom
 #' @importFrom xgboost xgb.load xgb.DMatrix

@@ -33,7 +33,7 @@ predict_bcf(
 .@param charge integer; if input = "sirius", this specifies the charge state of the features to be predicted. Default is 1.}
 }
 \value{
-A data.frame containing the original input and predicted BCF.
+A data.frame containing the original input, predicted BCF, and applicability domain.
 }
 \description{
 Top-level wrapper to predict BCF from either SMILES strings or a SIRIUS

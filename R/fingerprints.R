@@ -22,8 +22,8 @@ generate_fingerprints <- function(smiles) {
   }
 
   # Un0 - Un54 fingerprints in SIRIUS custom
-  smarts1 <- as.character(fpIndex$smarts[fpIndex$fpType == "custom1"]) # read SMARTS for custom fp
-  colnames1 <- as.character(fpIndex$fpName[fpIndex$fpType == "custom1"]) # read names for custom fp
+  smarts1 <- as.character(fpIndex$smarts[fpIndex$fpType == "custom1"]) # read SMARTS for custom fp # nolint
+  colnames1 <- as.character(fpIndex$fpName[fpIndex$fpType == "custom1"]) # read names for custom fp # nolint
   custom.fp1 <- lapply(mols, get.fingerprint, type = "substructure", substructure.pattern = smarts1) # calculate fp
   custom.fp1 <- fp.to.matrix(custom.fp1) # convert fp list to matrix
   colnames(custom.fp1) <- colnames1 # apply fp names to columns

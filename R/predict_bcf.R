@@ -15,7 +15,7 @@
 #' @param cutoff double; if threshold = "mc" this ratio specifies the cutoff after MC simulation.
 #'.@param charge integer; if input = "sirius", this specifies the charge state of the features to be predicted. Default is 1.
 #' 
-#' @return A data.frame containing the original input and predicted BCF.
+#' @return A data.frame containing the original input, predicted BCF, and applicability domain.
 #' @export
 #'
 #' @examples
@@ -65,6 +65,14 @@ predict_bcf <- function(
     package = "fishFingers"
   )
 
+  if (model_path == "") {
+    stop("Model file 'fishFingers.json' not found in inst/extdata. Try reinstalling fishFingers.",
+         call. = FALSE)
+  }
+
+  model <- xgboost::xgb.load(model_path)
+  #meta <- readRDS(meta_path)
+
   # Load fpIndex to filter fingerprints to model features
   fp_index_path <- system.file(
     "extdata",
@@ -74,19 +82,19 @@ predict_bcf <- function(
   fpIndex <- read.csv(fp_index_path, check.names = FALSE)
   fp_names <- fpIndex$fpName[fpIndex$fpType != "ecfp6"]
 
+  species_path <- system.file(
+    "extdata",
+    "species_index.csv",
+    package = "fishFingers"
+  )
+
+  species_index <- read.csv(species_path, check.names = FALSE)
+
   #meta_path <- system.file(
   #  "extdata",
   #  "fishFingers_metadata.rds",
   #  package = "fishFingers"
   #)
-
-  if (model_path == "") {
-    stop("Model file 'fishFingers.json' not found in inst/extdata. Try reinstalling fishFingers.",
-         call. = FALSE)
-  }
-
-  model <- xgboost::xgb.load(model_path)
-  #meta <- readRDS(meta_path)
 
   ## ---- fingerprint generation ----------------------------------------------
   if (input == "smiles") {
@@ -163,6 +171,21 @@ predict_bcf <- function(
   }
 
 
+  ## ---- calculate similarity -------------------------------------------------
+
+  tansim <- appdomain(fingerprints)
+
+  interp <- case_when(
+    tansim == 1 ~ "match",
+    tansim >= 0.8 ~ "good",
+    tansim >= 0.6 ~ "fair",
+    TRUE ~ "low"
+  )
+
+    ## ---- calculate fish n -------------------------------------------------
+
+  train_n <- species_index$n[match(species, species_index$scientific_name)]
+
   ## ---- combine species ------------------------------------------------------
 
   fish <- make_species_matrix(species)
@@ -185,7 +208,10 @@ predict_bcf <- function(
   ## ---- output ---------------------------------------------------------------
   out <- cbind(
     input_df,
-    bcf_pred = pred
+    bcf_pred = pred,
+    conf = tansim,
+    conf_interp = interp,
+    species_train_n = train_n
   )
 
   rownames(out) <- NULL
