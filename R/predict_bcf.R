@@ -163,8 +163,8 @@ predict_bcf <- function(
       )
 
     } else if (threshold == "basic") {
-      # no transformation; keep raw posterior probabilities
-      fingerprints <- as.numeric(post_prob_matrix)
+      post_prob_matrix[, fp_names] <- round(as.numeric(unlist(post_prob_matrix[, fp_names])))
+      fingerprints <- post_prob_matrix
     }
 
   }
