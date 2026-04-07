@@ -38,7 +38,6 @@ predict_bcf <- function(
 
   ## ---- argument validation --------------------------------------------------
   input <- match.arg(input)
-  threshold <- match.arg(threshold)
 
   if (missing(species)) {
     warning("Argument 'species' not provided. Defaulting to Cyprinus carpio.", call. = FALSE)
