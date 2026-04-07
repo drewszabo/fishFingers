@@ -1,5 +1,6 @@
 #' R/package.R
 #' @import data.table
+#' @import RSirius
 #' @importFrom base as.matrix matrix as.data.frame intersect
 #' @importFrom utils read.csv unzip
 #' @importFrom rcdk parse.smiles get.fingerprint

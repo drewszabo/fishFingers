@@ -163,8 +163,7 @@ predict_bcf <- function(
       )
 
     } else if (threshold == "basic") {
-      post_prob_matrix[, fp_names] <- round(as.numeric(unlist(post_prob_matrix[, fp_names])))
-      fingerprints <- post_prob_matrix
+      fingerprints <- round(post_prob_matrix[, fp_names])
     }
 
   }
