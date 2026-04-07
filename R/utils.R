@@ -141,6 +141,7 @@ extract_fingerprints <- function(features, api, fingerid_data, project_id, topMo
     # Convert formulas to a tibble
     map_df(formulas, function(f) {
       tibble(
+        feature_id = features[[which(aligned_id == fid)]][["name"]],
         aligned_id = fid,
         formula_id = f$formulaId,
         mol_form   = f$molecularFormula,
@@ -186,11 +187,12 @@ extract_fingerprints <- function(features, api, fingerid_data, project_id, topMo
     # Add identifiers
     fp_df %>%
       mutate(
+        feature_id = df$feature_id[i],
         aligned_id = df$aligned_id[i],
         formula_id = df$formula_id[i],
         molecularFormula = df$mol_form[i]
       ) %>%
-      select(aligned_id, formula_id, molecularFormula, everything())
+      select(feature_id, aligned_id, formula_id, molecularFormula, everything())
   })
   
   # Warn once with total failed count

@@ -143,11 +143,11 @@ predict_bcf <- function(
     }
     
     # Reorder to metadata columns + fp_names order
-    metadata_cols <- base::names(post_prob_matrix)[1:3]
+    metadata_cols <- base::names(post_prob_matrix)[1:4]
     post_prob_matrix <- post_prob_matrix[, c(metadata_cols, fp_names), drop = FALSE]
 
     input_df <- data.frame(
-      post_prob_matrix[, 1:3]
+      post_prob_matrix[, 1:4]
     )
   }
 
