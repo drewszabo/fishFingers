@@ -1,6 +1,10 @@
 #' R/package.R
+#' 
+#' @name fishFingers
+#' 
 #' @import data.table
 #' @import RSirius
+#' 
 #' @importFrom base as.matrix matrix as.data.frame intersect
 #' @importFrom utils read.csv unzip
 #' @importFrom rcdk parse.smiles get.fingerprint
@@ -16,3 +20,4 @@
 #' @importFrom caret preProcess
 #' @importFrom purrr map_dfr map_df
 #' @importFrom RSirius SiriusSDK
+NULL
