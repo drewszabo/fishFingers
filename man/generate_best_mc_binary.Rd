@@ -2,7 +2,7 @@
 % Please edit documentation in R/montecarlo.R
 \name{generate_best_mc_binary}
 \alias{generate_best_mc_binary}
-\title{Generate deterministic binary fingerprints via Monte Carlo averaging}
+\title{Generate deterministic binary fingerprints via vectorized Binomial sampling}
 \usage{
 generate_best_mc_binary(prob_matrix, N = 10000, threshold = 0.5)
 }
@@ -17,5 +17,5 @@ generate_best_mc_binary(prob_matrix, N = 10000, threshold = 0.5)
 Deterministic binary matrix
 }
 \description{
-Generate deterministic binary fingerprints via Monte Carlo averaging
+Generate deterministic binary fingerprints via vectorized Binomial sampling
 }
