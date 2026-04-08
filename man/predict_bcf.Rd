@@ -9,7 +9,7 @@ predict_bcf(
   input = c("smiles", "sirius"),
   species = "Cyprinus carpio",
   threshold = "mc",
-  topMost = TRUE,
+  topMost = c("formula", "compound", "all"),
   N = 10000,
   cutoff = 0.5,
   charge = 1

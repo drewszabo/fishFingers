@@ -123,40 +123,65 @@ sirius_init <- function(path = NULL, api) {
 }
 
 
-extract_fingerprints <- function(features, api, fingerid_data, project_id, topMost = TRUE) {
+extract_fingerprints <- function(features, api, fingerid_data, project_id, topMost = "formula") {
 
   aligned_id <- as.character()
   for (i in seq_along(1:length(features))) {
     aligned_id <- append(aligned_id, features[[i]]$alignedFeatureId)
   }
   
+  feature_names <- setNames(map_chr(features, "name", .default = "Unknown"), aligned_id)
+
   # Retrieve all formula candidates
-  df <- map_df(aligned_id, function(fid) {
-    # Get formula candidates for this aligned feature
+  df_list <- map_df(aligned_id, function(fid) {
+    # Get formula and structure candidates
     formulas <- api$features_api$GetFormulaCandidates(project_id, fid)
-    
-    if (length(formulas) == 0)
-      return(NULL)
-    
-    # Convert formulas to a tibble
-    map_df(formulas, function(f) {
-      tibble(
-        feature_id = features[[which(aligned_id == fid)]][["name"]],
-        aligned_id = fid,
-        formula_id = f$formulaId,
-        mol_form   = f$molecularFormula,
-        rank       = as.numeric(unlist(f$rank %||% NA_real_)),
-        score_norm = as.numeric(unlist(f$siriusScoreNormalized %||% NA_real_)),
-        score      = as.numeric(unlist(f$siriusScore %||% NA_real_))
-      )
-    })
-  })
   
-  if (topMost == TRUE) {
+    if (length(formulas) == 0) return(NULL)
+
+    current_name <- feature_names[[as.character(fid)]]
+
+    if (topMost == "compound") {
+      compounds <- api$features_api$GetStructureCandidates(project_id, fid)
+      if (length(compounds) > 10) {
+        compounds <- compounds[1:10]
+      }
+
+      res <- map(compounds, ~list(
+          feature_id    = current_name,
+          aligned_id    = fid,
+          formula_id    = .x$formulaId,
+          mol_form      = .x$molecularFormula,
+          comp_inchikey = .x$inchiKey,
+          comp_rank     = as.numeric(unlist(.x$rank %||% NA_real_)),
+          comp_score    = as.numeric(unlist(.x$csiScore %||% NA_real_))
+        )
+      )
+    } else {
+      res <- map(formulas, ~list(
+         feature_id    = current_name,
+         aligned_id    = fid,
+         formula_id    = .x$formulaId,
+         mol_form      = .x$molecularFormula,
+         form_rank     = as.numeric(unlist(.x$rank %||% NA_real_)),
+         form_score    = as.numeric(unlist(.x$siriusScore %||% NA_real_))
+         )
+        )
+      }
+    return(bind_rows(res))
+  })
+
+  df <- bind_rows(df_list)
+  
+  if (topMost == "formula") {
     # Select top‑ranked formula by rank, excluding NA ranks
     df <- df %>%
       group_by(aligned_id) %>%
-      filter(rank == 1)
+      filter(form_rank == 1)  
+  } else if (topMost == "compound") {
+    df <- df %>%
+      group_by(aligned_id) %>%
+      filter(comp_rank == 1)
   }
 
   # Retrieve fingerprint prediction for selected formulas

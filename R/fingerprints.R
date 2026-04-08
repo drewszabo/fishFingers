@@ -289,9 +289,13 @@ read_sirius_fingerprints <- function(path = NULL, topMost = TRUE, charge = 1) {
   fingerid_data <- api$projects_api$GetFingerIdData(project_id, charge = charge)
   fingerid_data$fpName <- paste0("Un", fingerid_data$absoluteIndex)
 
-  if (topMost == TRUE) {
-    cat("Importing fingerprints for top-ranked candidates only\n")
-    top_fp <- extract_fingerprints(features, api, fingerid_data, project_id, topMost = TRUE)
+  if (topMost == "formula") {
+    cat("Importing fingerprints for top-ranked formulas only\n")
+    top_fp <- extract_fingerprints(features, api, fingerid_data, project_id, topMost = "formula")
+    return(top_fp)
+} else if (topMost == "compound") {
+    cat("Importing fingerprints for top-ranked compounds only\n")
+    top_fp <- extract_fingerprints(features, api, fingerid_data, project_id, topMost = "compound")
     return(top_fp)
 } else {
     cat("Importing fingerprints for all candidates\n")

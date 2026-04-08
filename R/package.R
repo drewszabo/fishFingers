@@ -9,13 +9,13 @@
 #' @importFrom fingerprint fp.to.matrix
 #' @importFrom tibble as_tibble tibble
 #' @importFrom magrittr %>%
-#' @importFrom dplyr bind_cols mutate filter arrange slice select group_by case_when
+#' @importFrom dplyr bind_cols bind_rows mutate filter arrange slice select group_by case_when
 #' @importFrom stringr str_replace str_detect str_trim
 #' @importFrom stats predict rbinom
 #' @importFrom xgboost xgb.load xgb.DMatrix
 #' @importFrom webchem is.smiles
 #' @importFrom jsonlite fromJSON
 #' @importFrom caret preProcess
-#' @importFrom purrr map_dfr map_df
+#' @importFrom purrr map map_dfr map_df map_chr
 #' @importFrom RSirius SiriusSDK
 NULL
