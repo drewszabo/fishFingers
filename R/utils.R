@@ -206,8 +206,7 @@ extract_fingerprints <- function(features, api, fingerid_data, project_id, topMo
     probs <- as.character(res)
     
     # Make a single-row tibble (1 row, N columns)
-    fp_df <- as_tibble(t(probs))
-    names(fp_df) <- fingerid_data$fpName  # 5000 column names
+    fp_df <- as_tibble(t(probs), .name_repair = ~ fingerid_data$fpName)
     
     # Add identifiers
     fp_df %>%
