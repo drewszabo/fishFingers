@@ -125,10 +125,7 @@ sirius_init <- function(path = NULL, api) {
 
 extract_fingerprints <- function(features, api, fingerid_data, project_id, topMost = "formula") {
 
-  aligned_id <- as.character()
-  for (i in seq_along(1:length(features))) {
-    aligned_id <- append(aligned_id, features[[i]]$alignedFeatureId)
-  }
+  aligned_id <- map_chr(features, "alignedFeatureId")
   
   feature_names <- setNames(map_chr(features, "name", .default = "Unknown"), aligned_id)
 
@@ -154,7 +151,7 @@ extract_fingerprints <- function(features, api, fingerid_data, project_id, topMo
           mol_form      = .x$molecularFormula,
           comp_inchikey = .x$inchiKey,
           comp_rank     = as.numeric(unlist(.x$rank %||% NA_real_)),
-          comp_score    = as.numeric(unlist(.x$csiScore %||% NA_real_))
+          score    = as.numeric(unlist(.x$csiScore %||% NA_real_))
         )
       )
     } else {
@@ -164,7 +161,7 @@ extract_fingerprints <- function(features, api, fingerid_data, project_id, topMo
          formula_id    = .x$formulaId,
          mol_form      = .x$molecularFormula,
          form_rank     = as.numeric(unlist(.x$rank %||% NA_real_)),
-         form_score    = as.numeric(unlist(.x$siriusScore %||% NA_real_))
+         core    = as.numeric(unlist(.x$siriusScore %||% NA_real_))
          )
         )
       }
@@ -195,7 +192,6 @@ extract_fingerprints <- function(features, api, fingerid_data, project_id, topMo
       failed_count <<- failed_count + 1
       return(NULL)
     })
-    
     # If API failed, skip this iteration
     if (is.null(res) || length(res) == 0) {
       failed_count <<- failed_count + 1
@@ -214,9 +210,10 @@ extract_fingerprints <- function(features, api, fingerid_data, project_id, topMo
         feature_id = df$feature_id[i],
         aligned_id = df$aligned_id[i],
         formula_id = df$formula_id[i],
-        molecularFormula = df$mol_form[i]
+        molecularFormula = df$mol_form[i],
+        score = df$score[i]
       ) %>%
-      select(feature_id, aligned_id, formula_id, molecularFormula, everything())
+      select(feature_id, aligned_id, formula_id, molecularFormula, score, everything())
   })
   
   # Warn once with total failed count

@@ -134,21 +134,21 @@ predict_bcf <- function(
     )
 
     # Convert to data.frame (not data.table) to avoid data.table issues
-    post_prob_matrix <- base::as.data.frame(post_prob_matrix)
+    post_prob_matrix <- as.data.frame(post_prob_matrix)
     
     # Find missing columns and add them with 0 values
-    missing_cols <- base::setdiff(fp_names, base::names(post_prob_matrix))
+    missing_cols <- setdiff(fp_names, names(post_prob_matrix))
     
     for (col in missing_cols) {
       post_prob_matrix[[col]] <- 0L
     }
     
     # Reorder to metadata columns + fp_names order
-    metadata_cols <- base::names(post_prob_matrix)[1:4]
+    metadata_cols <- names(post_prob_matrix)[1:5]
     post_prob_matrix <- post_prob_matrix[, c(metadata_cols, fp_names), drop = FALSE]
 
     input_df <- data.frame(
-      post_prob_matrix[, 1:4]
+      post_prob_matrix[, 1:5]
     )
   }
 
