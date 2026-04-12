@@ -76,7 +76,7 @@ predict_bcf <- function(
   # Load fpIndex to filter fingerprints to model features
   fp_index_path <- system.file(
     "extdata",
-    "fpIndex.csv",
+    "fpIndex_v2.0.csv",
     package = "fishFingers"
   )
   fpIndex <- read.csv(fp_index_path, check.names = FALSE)

@@ -58,11 +58,11 @@ make_species_matrix <- function(species) {
   species <- tolower(trimws(species))
   species <- str_replace(species, " ", "_")
 
-  species_factor <- readRDS(
-    system.file("extdata", "species.rds", package = "fishFingers")
+  species_factor <- read.csv(
+    system.file("extdata", "species_index.csv", package = "fishFingers")
   )
 
-  species_levels <- tolower(levels(species_factor))
+  species_levels <- tolower(species_factor$scientific_name)
 
   sp_vec <- as.integer(species_levels == species)
 
@@ -161,7 +161,7 @@ extract_fingerprints <- function(features, api, fingerid_data, project_id, topMo
          formula_id    = .x$formulaId,
          mol_form      = .x$molecularFormula,
          form_rank     = as.numeric(unlist(.x$rank %||% NA_real_)),
-         core    = as.numeric(unlist(.x$siriusScore %||% NA_real_))
+         score    = as.numeric(unlist(.x$siriusScore %||% NA_real_))
          )
         )
       }
@@ -202,7 +202,8 @@ extract_fingerprints <- function(features, api, fingerid_data, project_id, topMo
     probs <- as.character(res)
     
     # Make a single-row tibble (1 row, N columns)
-    fp_df <- as_tibble(t(probs), .name_repair = ~ fingerid_data$fpName)
+    fp_df <- as.data.frame(t(probs))
+    colnames(fp_df) <- fingerid_data$fpName
     
     # Add identifiers
     fp_df %>%
