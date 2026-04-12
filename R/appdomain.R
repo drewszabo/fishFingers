@@ -18,7 +18,7 @@ appdomain <- function(fingerprints) {
   # Load training data
   rawdata_path <- system.file(
     "extdata",
-    "fishFingers_v2-0.csv",
+    "train_df.csv",
     package = "fishFingers"
   )
 
