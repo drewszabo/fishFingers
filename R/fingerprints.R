@@ -9,7 +9,7 @@ generate_fingerprints <- function(smiles) {
 
   fp_index_path <- system.file( # find path to fpIndex
     "extdata",
-    "fpIndex.csv",
+    "fpIndex_v2.0.csv",
     package = "fishFingers"
   )
 
@@ -21,10 +21,10 @@ generate_fingerprints <- function(smiles) {
     stop("Failed to parse SMILES")
   }
 
-  # Un0 - Un54 fingerprints in SIRIUS custom
-  smarts1 <- as.character(fpIndex$smarts[fpIndex$fpType == "custom1"]) # read SMARTS for custom fp # nolint
-  colnames1 <- as.character(fpIndex$fpName[fpIndex$fpType == "custom1"]) # read names for custom fp # nolint
-  custom.fp1 <- lapply(mols, get.fingerprint, type = "substructure", substructure.pattern = smarts1) # calculate fp
+  # OpenBabel fingerprints
+  openbabel <- as.character(fpIndex$smarts[fpIndex$fpType == "openbabel"]) # read SMARTS for custom fp # nolint
+  colnames1 <- as.character(fpIndex$fpName[fpIndex$fpType == "openbabel"]) # read names for custom fp # nolint
+  custom.fp1 <- lapply(mols, get.fingerprint, type = "substructure", substructure.pattern = openbabel) # calculate fp
   custom.fp1 <- fp.to.matrix(custom.fp1) # convert fp list to matrix
   colnames(custom.fp1) <- colnames1 # apply fp names to columns
 
@@ -32,37 +32,48 @@ generate_fingerprints <- function(smiles) {
   substructure <- lapply(mols, get.fingerprint, type = "substructure")
   substructure <- fp.to.matrix(substructure)
   colnames(substructure) <- paste0("Un", seq(55, 54 + ncol(substructure)))
-  substructure_filter <- as.integer(fpIndex$typeIndex[fpIndex$fpType == "substructure"])
-  substructure <- substructure[, substructure_filter, drop = FALSE]
+  substructure <- substructure[,fpIndex$fpName[fpIndex$fpType == "substructure"]]
 
   # MACCS
   maccs <- lapply(mols, get.fingerprint, type = "maccs")
   maccs <- fp.to.matrix(maccs)
   colnames(maccs) <- paste0("Un", seq(362, 361 + ncol(maccs)))
-  maccs_filter <- as.integer(fpIndex$typeIndex[fpIndex$fpType == "maccs"])
-  maccs <- maccs[, maccs_filter, drop = FALSE]
+  maccs <- maccs[,fpIndex$fpName[fpIndex$fpType == "maccs"]]
 
   # PubChem CACTVS
   cactvs <- lapply(mols, get.fingerprint, type = "pubchem")
   cactvs <- fp.to.matrix(cactvs)
   colnames(cactvs) <- paste0("Un", seq(528, 527 + ncol(cactvs)))
-  cactvs_filter <- as.integer(fpIndex$typeIndex[fpIndex$fpType == "cactvs"])
-  cactvs <- cactvs[, cactvs_filter, drop = FALSE]
+  cactvs <- cactvs[,fpIndex$fpName[fpIndex$fpType == "cactvs"]]
 
   # Klekota-Roth
   kroth <- lapply(mols, get.fingerprint, type = "kr")
   kroth <- fp.to.matrix(kroth)
   colnames(kroth) <- paste0("Un", seq(1409, 1408 + ncol(kroth)))
-  kroth_filter <- as.integer(fpIndex$typeIndex[fpIndex$fpType == "kroth"])
-  kroth <- kroth[, kroth_filter, drop = FALSE]
+  kroth <- kroth[,fpIndex$fpName[fpIndex$fpType == "kroth"]]
 
-  # Custom Fingerprints 2
-  smarts2 <- as.character(fpIndex$smarts[fpIndex$fpType == "custom2"])
-  colnames2 <- as.character(fpIndex$fpName[fpIndex$fpType == "custom2"])
-
-  custom.fp2 <- lapply(mols, get.fingerprint, type = "substructure", substructure.pattern = smarts2)
+  # BioSMARTS
+  biosmarts <- as.character(fpIndex$smarts[fpIndex$fpType == "biosmarts"])
+  colnames2 <- as.character(fpIndex$fpName[fpIndex$fpType == "biosmarts"])
+  custom.fp2 <- lapply(mols, get.fingerprint, type = "substructure", substructure.pattern = biosmarts)
   custom.fp2 <- fp.to.matrix(custom.fp2)
   colnames(custom.fp2) <- colnames2
+
+  # Ring
+  ring.smarts <- as.character(fpIndex$smarts[fpIndex$fpType == "ring"])
+  colnames2 <- as.character(fpIndex$fpName[fpIndex$fpType == "ring"])
+  ring <- lapply(mols, get.fingerprint, type = "substructure", substructure.pattern = ring.smarts)
+  ring <- fp.to.matrix(ring)
+  colnames(ring) <- colnames2
+
+  # In Silico
+  insilico.smarts <- as.character(fpIndex$smarts[fpIndex$fpType == "insilico"])
+  colnames2 <- as.character(fpIndex$fpName[fpIndex$fpType == "insilico"])
+  insilico <- lapply(mols, get.fingerprint, type = "substructure", substructure.pattern = insilico.smarts)
+  insilico <- fp.to.matrix(insilico)
+  colnames(insilico) <- colnames2
+
+
 
   # build model data
 
@@ -71,7 +82,9 @@ generate_fingerprints <- function(smiles) {
     bind_cols(maccs) %>%
     bind_cols(cactvs) %>%
     bind_cols(kroth) %>%
-    bind_cols(custom.fp2)
+    bind_cols(custom.fp2) %>%
+    bind_cols(ring) %>%
+    bind_cols(insilico)
 
   return(fp)
 
