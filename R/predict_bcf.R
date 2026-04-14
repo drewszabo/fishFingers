@@ -179,8 +179,8 @@ predict_bcf <- function(
 
   interp <- case_when(
     tansim == 1 ~ "match",
-    tansim >= 0.8 ~ "good",
-    tansim >= 0.6 ~ "fair",
+    tansim >= 0.9 ~ "good",
+    tansim >= 0.75 ~ "moderate",
     TRUE ~ "low"
   )
 
