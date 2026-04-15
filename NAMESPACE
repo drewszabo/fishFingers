@@ -3,6 +3,7 @@
 export(check_species)
 export(generate_fingerprints)
 export(predict_bcf)
+export(predict_bcf_fps)
 export(read_sirius_fingerprints)
 import(data.table)
 importFrom(caret,preProcess)

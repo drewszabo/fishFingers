@@ -2,11 +2,22 @@
 % Please edit documentation in R/predict_bcf.R
 \name{predict_bcf}
 \alias{predict_bcf}
+\alias{predict_bcf_fps}
 \title{Predict bioconcentration factor (BCF)}
 \usage{
 predict_bcf(
   x,
   input = c("smiles", "sirius"),
+  species = "Cyprinus carpio",
+  threshold = c("mc"),
+  topMost = TRUE,
+  N = 10000,
+  cutoff = 0.5
+)
+
+predict_bcf_fps(
+  input = c("smiles", "sirius"),
+  fingerprints,
   species = "Cyprinus carpio",
   threshold = c("mc"),
   topMost = TRUE,
@@ -29,14 +40,18 @@ predict_bcf(
 \item{N}{integer; if threshold = "mc" this number specifies the number of Monte Carlo simulations performed. Higher iterations take longer.}
 
 \item{cutoff}{double; if threshold = "mc" this ratio specifies the cutoff after MC simulation.}
+
+\item{fingerprints}{A \code{data.frame} with fingerprints for prediction.}
 }
 \value{
 A data.frame containing the original input and predicted BCF.
 }
 \description{
-Top-level wrapper to predict BCF from either SMILES strings or a SIRIUS
-project directory. Internally generates fingerprints, applies the trained
-XGBoost model, and optionally performs Monte Carlo thresholding.
+\code{predict_bcf} is a top-level wrapper to predict BCF from either SMILES strings
+or a SIRIUS project directory. Internally generates fingerprints, applies the trained
+XGBoost model, and optionally performs Monte Carlo thresholding. \code{predict_bcf_fps}
+is a lower-level function that accepts fingerprints, and is used by \code{predict_bcf}
+to perform the calculations.
 }
 \examples{
 predict_bcf(

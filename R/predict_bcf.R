@@ -1,9 +1,11 @@
 # predict_bcf.R
 #' Predict bioconcentration factor (BCF)
 #'
-#' Top-level wrapper to predict BCF from either SMILES strings or a SIRIUS
-#' project directory. Internally generates fingerprints, applies the trained
-#' XGBoost model, and optionally performs Monte Carlo thresholding.
+#' \code{predict_bcf} is a top-level wrapper to predict BCF from either SMILES strings
+#' or a SIRIUS project directory. Internally generates fingerprints, applies the trained
+#' XGBoost model, and optionally performs Monte Carlo thresholding. \code{predict_bcf_fps}
+#' is a lower-level function that accepts fingerprints, and is used by \code{predict_bcf}
+#' to perform the calculations.
 #'
 #' @param x Character vector of SMILES or a file path to a SIRIUS project.
 #' @param input Character string, either "smiles" or "sirius".
@@ -13,6 +15,7 @@
 #' @param topMost logical; if input = "sirius", then select if the top ranked or all candidates are predicted.
 #' @param N integer; if threshold = "mc" this number specifies the number of Monte Carlo simulations performed. Higher iterations take longer.
 #' @param cutoff double; if threshold = "mc" this ratio specifies the cutoff after MC simulation.
+#' @param fingerprints A \code{data.frame} with fingerprints for prediction.
 #'
 #' @return A data.frame containing the original input and predicted BCF.
 #' @export
@@ -37,6 +40,81 @@ predict_bcf <- function(
   input <- match.arg(input)
   threshold <- match.arg(threshold)
 
+
+  if (missing(x) || length(x) == 0) {
+    stop("Argument 'x' must not be empty.", call. = FALSE)
+  }
+
+
+  ## ---- fingerprint generation ----------------------------------------------
+  if (input == "smiles") {
+
+    if (!is.character(x)) {
+      stop("For input = 'smiles', x must be a character vector.",
+           call. = FALSE)
+    }
+
+    valid <- vapply(
+      x,
+      webchem::is.smiles,
+      logical(1)
+    )
+
+    if (!all(valid)) {
+      stop(
+        "Invalid SMILES detected at positions: ",
+        paste(which(!valid), collapse = ", "),
+        call. = FALSE
+      )
+    }
+
+    fingerprints <- generate_fingerprints(smiles = x)
+
+  } else if (input == "sirius") {
+
+    if (!is.character(x) || length(x) != 1L) {
+      stop("For input = 'sirius', x must be a single file path.",
+           call. = FALSE)
+    }
+
+    if (!dir.exists(x)) {
+      stop("SIRIUS project directory does not exist: ", x,
+           call. = FALSE)
+    }
+
+    fingerprints <- read_sirius_fingerprints(
+      sirius_project_dir = x,
+      topMost = topMost
+    )
+  }
+  
+  return(predict_bcf_fps(
+    input = input,
+    fingerprints = fingerprints,
+    species = species,
+    threshold = threshold,
+    topMost = topMost,
+    N = N,
+    cutoff = cutoff
+  ))
+}
+
+#' @rdname predict_bcf
+#' @export
+predict_bcf_fps <- function(
+    input = c("smiles", "sirius"),
+    fingerprints,
+    species = "Cyprinus carpio",
+    threshold = c("mc"),
+    topMost = TRUE,
+    N = 10000,
+    cutoff = 0.5
+) {
+
+  ## ---- argument validation --------------------------------------------------
+  input <- match.arg(input)
+  threshold <- match.arg(threshold)
+
   if (missing(species)) {
     warning("Argument 'species' not provided. Defaulting to Cyprinus carpio.", call. = FALSE)
   }
@@ -46,10 +124,6 @@ predict_bcf <- function(
   }
 
   check_species(species)
-
-  if (missing(x) || length(x) == 0) {
-    stop("Argument 'x' must not be empty.", call. = FALSE)
-  }
 
   ## ---- model loading --------------------------------------------------------
   model_path <- system.file(
@@ -75,51 +149,15 @@ predict_bcf <- function(
   ## ---- fingerprint generation ----------------------------------------------
   if (input == "smiles") {
 
-    if (!is.character(x)) {
-      stop("For input = 'smiles', x must be a character vector.",
-           call. = FALSE)
-    }
-
-    valid <- vapply(
-      x,
-      webchem::is.smiles,
-      logical(1)
-    )
-
-    if (!all(valid)) {
-      stop(
-        "Invalid SMILES detected at positions: ",
-        paste(which(!valid), collapse = ", "),
-        call. = FALSE
-      )
-    }
-
     input_df <- data.frame(
       input = x,
       stringsAsFactors = FALSE
     )
 
-    fingerprints <- generate_fingerprints(smiles = x)
-
   } else if (input == "sirius") {
 
-    if (!is.character(x) || length(x) != 1L) {
-      stop("For input = 'sirius', x must be a single file path.",
-           call. = FALSE)
-    }
-
-    if (!dir.exists(x)) {
-      stop("SIRIUS project directory does not exist: ", x,
-           call. = FALSE)
-    }
-
-    post_prob_matrix <- read_sirius_fingerprints(
-      sirius_project_dir = x,
-      topMost = topMost
-    )
-
     input_df <- data.frame(
-      post_prob_matrix[,1:2]
+      fingerprints[,1:2]
     )
   }
 
@@ -129,14 +167,14 @@ predict_bcf <- function(
     if (threshold == "mc") {
 
       fingerprints <- fishFingers_mc(
-        x = post_prob_matrix,
+        x = fingerprints,
         N = N,
         threshold = cutoff
       )
 
     } else if (threshold == "basic") {
       # no transformation; keep raw posterior probabilities
-      fingerprints <- as.numeric(post_prob_matrix)
+      fingerprints <- as.numeric(fingerprints)
     }
 
   }
