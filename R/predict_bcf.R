@@ -68,6 +68,11 @@ predict_bcf <- function(
       )
     }
 
+    input_df <- data.frame(
+      input = x,
+      stringsAsFactors = FALSE
+    )
+    
     fingerprints <- generate_fingerprints(smiles = x)
 
   } else if (input == "sirius") {
@@ -86,9 +91,13 @@ predict_bcf <- function(
       sirius_project_dir = x,
       topMost = topMost
     )
+    
+    input_df <- data.frame(
+      fingerprints[,1:2]
+    )
   }
   
-  return(predict_bcf_fps(
+  pred <- predict_bcf_fps(
     input = input,
     fingerprints = fingerprints,
     species = species,
@@ -96,7 +105,16 @@ predict_bcf <- function(
     topMost = topMost,
     N = N,
     cutoff = cutoff
-  ))
+  )
+  
+  ## ---- output ---------------------------------------------------------------
+  out <- cbind(
+    input_df,
+    bcf_pred = pred
+  )
+  
+  rownames(out) <- NULL
+  return(out)
 }
 
 #' @rdname predict_bcf
@@ -146,21 +164,6 @@ predict_bcf_fps <- function(
   model <- xgboost::xgb.load(model_path)
   #meta <- readRDS(meta_path)
 
-  ## ---- fingerprint generation ----------------------------------------------
-  if (input == "smiles") {
-
-    input_df <- data.frame(
-      input = x,
-      stringsAsFactors = FALSE
-    )
-
-  } else if (input == "sirius") {
-
-    input_df <- data.frame(
-      fingerprints[,1:2]
-    )
-  }
-
   ## ---- thresholding ---------------------------------------------------------
   if (input == "sirius") {
 
@@ -199,12 +202,5 @@ predict_bcf_fps <- function(
     newdata = dmat
   )
 
-  ## ---- output ---------------------------------------------------------------
-  out <- cbind(
-    input_df,
-    bcf_pred = pred
-  )
-
-  rownames(out) <- NULL
-  return(out)
+  return(pred)
 }
