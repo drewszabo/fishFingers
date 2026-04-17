@@ -102,7 +102,6 @@ predict_bcf <- function(
     fingerprints = fingerprints,
     species = species,
     threshold = threshold,
-    topMost = topMost,
     N = N,
     cutoff = cutoff
   )
@@ -124,7 +123,6 @@ predict_bcf_fps <- function(
     fingerprints,
     species = "Cyprinus carpio",
     threshold = c("mc"),
-    topMost = TRUE,
     N = 10000,
     cutoff = 0.5
 ) {
