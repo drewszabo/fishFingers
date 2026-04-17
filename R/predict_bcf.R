@@ -1,9 +1,11 @@
 # predict_bcf.R
 #' Predict bioconcentration factor (BCF)
 #'
-#' Top-level wrapper to predict BCF from either SMILES strings or a SIRIUS
-#' project directory. Internally generates fingerprints, applies the trained
-#' XGBoost model, and optionally performs Monte Carlo thresholding.
+#' \code{predict_bcf} is a top-level wrapper to predict BCF from either SMILES strings
+#' or a SIRIUS project directory. Internally generates fingerprints, applies the trained
+#' XGBoost model, and optionally performs Monte Carlo thresholding. \code{predict_bcf_fps}
+#' is a lower-level function that accepts fingerprints, and is used by \code{predict_bcf}
+#' to perform the calculations.
 #'
 #' @param x Character vector of SMILES or a file path to a SIRIUS project.
 #' @param input Character string, either "smiles" or "sirius".
@@ -13,6 +15,7 @@
 #' @param topMost logical; if input = "sirius", then select if the top ranked or all candidates are predicted.
 #' @param N integer; if threshold = "mc" this number specifies the number of Monte Carlo simulations performed. Higher iterations take longer.
 #' @param cutoff double; if threshold = "mc" this ratio specifies the cutoff after MC simulation.
+#' @param fingerprints A \code{data.frame} with fingerprints for prediction.
 #'
 #' @return A data.frame containing the original input and predicted BCF.
 #' @export
@@ -37,40 +40,11 @@ predict_bcf <- function(
   input <- match.arg(input)
   threshold <- match.arg(threshold)
 
-  if (missing(species)) {
-    warning("Argument 'species' not provided. Defaulting to Cyprinus carpio.", call. = FALSE)
-  }
-
-  if (input == "sirius" && missing(threshold)) {
-    warning("Argument 'threshold' not provided. Defaulting to 'mc'.", call. = FALSE)
-  }
-
-  check_species(species)
 
   if (missing(x) || length(x) == 0) {
     stop("Argument 'x' must not be empty.", call. = FALSE)
   }
 
-  ## ---- model loading --------------------------------------------------------
-  model_path <- system.file(
-    "extdata",
-    "fishFingers.json",
-    package = "fishFingers"
-  )
-
-  #meta_path <- system.file(
-  #  "extdata",
-  #  "fishFingers_metadata.rds",
-  #  package = "fishFingers"
-  #)
-
-  if (model_path == "") {
-    stop("Model file 'fishFingers.json' not found in inst/extdata. Try reinstalling fishFingers.",
-         call. = FALSE)
-  }
-
-  model <- xgboost::xgb.load(model_path)
-  #meta <- readRDS(meta_path)
 
   ## ---- fingerprint generation ----------------------------------------------
   if (input == "smiles") {
@@ -98,7 +72,7 @@ predict_bcf <- function(
       input = x,
       stringsAsFactors = FALSE
     )
-
+    
     fingerprints <- generate_fingerprints(smiles = x)
 
   } else if (input == "sirius") {
@@ -113,15 +87,80 @@ predict_bcf <- function(
            call. = FALSE)
     }
 
-    post_prob_matrix <- read_sirius_fingerprints(
+    fingerprints <- read_sirius_fingerprints(
       sirius_project_dir = x,
       topMost = topMost
     )
-
+    
     input_df <- data.frame(
-      post_prob_matrix[,1:2]
+      fingerprints[,1:2]
     )
   }
+  
+  pred <- predict_bcf_fps(
+    input = input,
+    fingerprints = fingerprints,
+    species = species,
+    threshold = threshold,
+    N = N,
+    cutoff = cutoff
+  )
+  
+  ## ---- output ---------------------------------------------------------------
+  out <- cbind(
+    input_df,
+    bcf_pred = pred
+  )
+  
+  rownames(out) <- NULL
+  return(out)
+}
+
+#' @rdname predict_bcf
+#' @export
+predict_bcf_fps <- function(
+    input = c("smiles", "sirius"),
+    fingerprints,
+    species = "Cyprinus carpio",
+    threshold = c("mc"),
+    N = 10000,
+    cutoff = 0.5
+) {
+
+  ## ---- argument validation --------------------------------------------------
+  input <- match.arg(input)
+  threshold <- match.arg(threshold)
+
+  if (missing(species)) {
+    warning("Argument 'species' not provided. Defaulting to Cyprinus carpio.", call. = FALSE)
+  }
+
+  if (input == "sirius" && missing(threshold)) {
+    warning("Argument 'threshold' not provided. Defaulting to 'mc'.", call. = FALSE)
+  }
+
+  check_species(species)
+
+  ## ---- model loading --------------------------------------------------------
+  model_path <- system.file(
+    "extdata",
+    "fishFingers.json",
+    package = "fishFingers"
+  )
+
+  #meta_path <- system.file(
+  #  "extdata",
+  #  "fishFingers_metadata.rds",
+  #  package = "fishFingers"
+  #)
+
+  if (model_path == "") {
+    stop("Model file 'fishFingers.json' not found in inst/extdata. Try reinstalling fishFingers.",
+         call. = FALSE)
+  }
+
+  model <- xgboost::xgb.load(model_path)
+  #meta <- readRDS(meta_path)
 
   ## ---- thresholding ---------------------------------------------------------
   if (input == "sirius") {
@@ -129,14 +168,14 @@ predict_bcf <- function(
     if (threshold == "mc") {
 
       fingerprints <- fishFingers_mc(
-        x = post_prob_matrix,
+        x = fingerprints,
         N = N,
         threshold = cutoff
       )
 
     } else if (threshold == "basic") {
       # no transformation; keep raw posterior probabilities
-      fingerprints <- as.numeric(post_prob_matrix)
+      fingerprints <- as.numeric(fingerprints)
     }
 
   }
@@ -161,12 +200,5 @@ predict_bcf <- function(
     newdata = dmat
   )
 
-  ## ---- output ---------------------------------------------------------------
-  out <- cbind(
-    input_df,
-    bcf_pred = pred
-  )
-
-  rownames(out) <- NULL
-  return(out)
+  return(pred)
 }
