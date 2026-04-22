@@ -32,25 +32,25 @@ generate_fingerprints <- function(smiles) {
   substructure <- lapply(mols, get.fingerprint, type = "substructure")
   substructure <- fp.to.matrix(substructure)
   colnames(substructure) <- paste0("Un", seq(55, 54 + ncol(substructure)))
-  substructure <- substructure[,fpIndex$fpName[fpIndex$fpType == "substructure"]]
+  substructure <- substructure[,fpIndex$fpName[fpIndex$fpType == "substructure"], drop = FALSE]
 
   # MACCS
   maccs <- lapply(mols, get.fingerprint, type = "maccs")
   maccs <- fp.to.matrix(maccs)
   colnames(maccs) <- paste0("Un", seq(362, 361 + ncol(maccs)))
-  maccs <- maccs[,fpIndex$fpName[fpIndex$fpType == "maccs"]]
+  maccs <- maccs[,fpIndex$fpName[fpIndex$fpType == "maccs"], drop = FALSE]
 
   # PubChem CACTVS
   cactvs <- lapply(mols, get.fingerprint, type = "pubchem")
   cactvs <- fp.to.matrix(cactvs)
   colnames(cactvs) <- paste0("Un", seq(528, 527 + ncol(cactvs)))
-  cactvs <- cactvs[,fpIndex$fpName[fpIndex$fpType == "cactvs"]]
+  cactvs <- cactvs[,fpIndex$fpName[fpIndex$fpType == "cactvs"], drop = FALSE]
 
   # Klekota-Roth
   kroth <- lapply(mols, get.fingerprint, type = "kr")
   kroth <- fp.to.matrix(kroth)
   colnames(kroth) <- paste0("Un", seq(1409, 1408 + ncol(kroth)))
-  kroth <- kroth[,fpIndex$fpName[fpIndex$fpType == "kroth"]]
+  kroth <- kroth[,fpIndex$fpName[fpIndex$fpType == "kroth"], drop = FALSE]
 
   # BioSMARTS
   biosmarts <- as.character(fpIndex$smarts[fpIndex$fpType == "biosmarts"])
@@ -61,23 +61,22 @@ generate_fingerprints <- function(smiles) {
 
   # Ring
   ring.smarts <- as.character(fpIndex$smarts[fpIndex$fpType == "ring"])
-  colnames2 <- as.character(fpIndex$fpName[fpIndex$fpType == "ring"])
+  colnames3 <- as.character(fpIndex$fpName[fpIndex$fpType == "ring"])
   ring <- lapply(mols, get.fingerprint, type = "substructure", substructure.pattern = ring.smarts)
   ring <- fp.to.matrix(ring)
-  colnames(ring) <- colnames2
+  colnames(ring) <- colnames3
 
   # In Silico
   insilico.smarts <- as.character(fpIndex$smarts[fpIndex$fpType == "insilico"])
-  colnames2 <- as.character(fpIndex$fpName[fpIndex$fpType == "insilico"])
+  colnames4 <- as.character(fpIndex$fpName[fpIndex$fpType == "insilico"])
   insilico <- lapply(mols, get.fingerprint, type = "substructure", substructure.pattern = insilico.smarts)
   insilico <- fp.to.matrix(insilico)
-  colnames(insilico) <- colnames2
+  colnames(insilico) <- colnames4
 
 
 
   # build model data
-
-  fp <- custom.fp1 %>%
+ fp <- custom.fp1 %>%
     bind_cols(substructure) %>%
     bind_cols(maccs) %>%
     bind_cols(cactvs) %>%
