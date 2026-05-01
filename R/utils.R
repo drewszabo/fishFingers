@@ -55,21 +55,22 @@ make_species_matrix <- function(species) {
     )
   }
 
-  species <- tolower(trimws(species))
-  species <- str_replace(species, " ", "_")
+  species_tr <- trimws(species)
+  species_tr <- str_replace(species_tr, " ", "_")
 
   species_factor <- read.csv(
     system.file("extdata", "species_index.csv", package = "fishFingers")
   )
 
-  species_levels <- tolower(species_factor$scientific_name)
+  species_levels <- species_factor$scientific_name
+  species_levels <- str_replace(species_levels, " ", "_")
 
-  sp_vec <- as.integer(species_levels == species)
+  sp_vec <- as.integer(species_levels == species_tr)
 
   matrix(
     sp_vec,
     nrow = 1,
-    dimnames = list(NULL, levels(species_factor))
+    dimnames = list(NULL, species_levels)
   )
 }
 
