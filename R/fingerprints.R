@@ -6,6 +6,7 @@
 #' @return data.frame of SMILES and 2691 structural fingerprints
 #' @export
 generate_fingerprints <- function(smiles) {
+  
 
   fp_index_path <- system.file( # find path to fpIndex
     "extdata",
