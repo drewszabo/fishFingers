@@ -80,5 +80,6 @@ AI governance requirements continue to evolve. This project should be periodical
 ## Disclaimer
 This model is provided for research purposes without warranty of fitness for regulatory or commercial use. Users are responsible for ensuring lawful and appropriate downstream application.
 
+
 ---
 Last Updated: 2026-04-27 by Drew Szabo
