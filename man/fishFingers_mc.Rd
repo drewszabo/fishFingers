@@ -17,6 +17,5 @@ fishFingers_mc(x, N = 10000, threshold = 0.5)
 Data frame with Monte Carlo binary fingerprints
 }
 \description{
-Automatically detects probabilistic fingerprint columns
-by matching "Un" in column names.
+Monte Carlo binarisation for fishFingers output
 }

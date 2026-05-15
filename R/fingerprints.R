@@ -1,4 +1,4 @@
-# R/fingerprints.R
+#' R/fingerprints.R
 #'
 #' Calculate fingerprints from SMILES
 #'
@@ -6,10 +6,11 @@
 #' @return data.frame of SMILES and 2691 structural fingerprints
 #' @export
 generate_fingerprints <- function(smiles) {
+  
 
   fp_index_path <- system.file( # find path to fpIndex
     "extdata",
-    "fpIndex.csv",
+    "fpIndex_v2.0.csv",
     package = "fishFingers"
   )
 
@@ -21,10 +22,10 @@ generate_fingerprints <- function(smiles) {
     stop("Failed to parse SMILES")
   }
 
-  # Un0 - Un54 fingerprints in SIRIUS custom
-  smarts1 <- as.character(fpIndex$smarts[fpIndex$fpType == "custom1"]) # read SMARTS for custom fp
-  colnames1 <- as.character(fpIndex$fpName[fpIndex$fpType == "custom1"]) # read names for custom fp
-  custom.fp1 <- lapply(mols, get.fingerprint, type = "substructure", substructure.pattern = smarts1) # calculate fp
+  # OpenBabel fingerprints
+  openbabel <- as.character(fpIndex$smarts[fpIndex$fpType == "openbabel"]) # read SMARTS for custom fp # nolint
+  colnames1 <- as.character(fpIndex$fpName[fpIndex$fpType == "openbabel"]) # read names for custom fp # nolint
+  custom.fp1 <- lapply(mols, get.fingerprint, type = "substructure", substructure.pattern = openbabel) # calculate fp
   custom.fp1 <- fp.to.matrix(custom.fp1) # convert fp list to matrix
   colnames(custom.fp1) <- colnames1 # apply fp names to columns
 
@@ -32,46 +33,58 @@ generate_fingerprints <- function(smiles) {
   substructure <- lapply(mols, get.fingerprint, type = "substructure")
   substructure <- fp.to.matrix(substructure)
   colnames(substructure) <- paste0("Un", seq(55, 54 + ncol(substructure)))
-  substructure_filter <- as.integer(fpIndex$typeIndex[fpIndex$fpType == "substructure"])
-  substructure <- substructure[, substructure_filter, drop = FALSE]
+  substructure <- substructure[,fpIndex$fpName[fpIndex$fpType == "substructure"], drop = FALSE]
 
   # MACCS
   maccs <- lapply(mols, get.fingerprint, type = "maccs")
   maccs <- fp.to.matrix(maccs)
   colnames(maccs) <- paste0("Un", seq(362, 361 + ncol(maccs)))
-  maccs_filter <- as.integer(fpIndex$typeIndex[fpIndex$fpType == "maccs"])
-  maccs <- maccs[, maccs_filter, drop = FALSE]
+  maccs <- maccs[,fpIndex$fpName[fpIndex$fpType == "maccs"], drop = FALSE]
 
   # PubChem CACTVS
   cactvs <- lapply(mols, get.fingerprint, type = "pubchem")
   cactvs <- fp.to.matrix(cactvs)
   colnames(cactvs) <- paste0("Un", seq(528, 527 + ncol(cactvs)))
-  cactvs_filter <- as.integer(fpIndex$typeIndex[fpIndex$fpType == "cactvs"])
-  cactvs <- cactvs[, cactvs_filter, drop = FALSE]
+  cactvs <- cactvs[,fpIndex$fpName[fpIndex$fpType == "cactvs"], drop = FALSE]
 
   # Klekota-Roth
   kroth <- lapply(mols, get.fingerprint, type = "kr")
   kroth <- fp.to.matrix(kroth)
   colnames(kroth) <- paste0("Un", seq(1409, 1408 + ncol(kroth)))
-  kroth_filter <- as.integer(fpIndex$typeIndex[fpIndex$fpType == "kroth"])
-  kroth <- kroth[, kroth_filter, drop = FALSE]
+  kroth <- kroth[,fpIndex$fpName[fpIndex$fpType == "kroth"], drop = FALSE]
 
-  # Custom Fingerprints 2
-  smarts2 <- as.character(fpIndex$smarts[fpIndex$fpType == "custom2"])
-  colnames2 <- as.character(fpIndex$fpName[fpIndex$fpType == "custom2"])
-
-  custom.fp2 <- lapply(mols, get.fingerprint, type = "substructure", substructure.pattern = smarts2)
+  # BioSMARTS
+  biosmarts <- as.character(fpIndex$smarts[fpIndex$fpType == "biosmarts"])
+  colnames2 <- as.character(fpIndex$fpName[fpIndex$fpType == "biosmarts"])
+  custom.fp2 <- lapply(mols, get.fingerprint, type = "substructure", substructure.pattern = biosmarts)
   custom.fp2 <- fp.to.matrix(custom.fp2)
   colnames(custom.fp2) <- colnames2
 
-  # build model data
+  # Ring
+  ring.smarts <- as.character(fpIndex$smarts[fpIndex$fpType == "ring"])
+  colnames3 <- as.character(fpIndex$fpName[fpIndex$fpType == "ring"])
+  ring <- lapply(mols, get.fingerprint, type = "substructure", substructure.pattern = ring.smarts)
+  ring <- fp.to.matrix(ring)
+  colnames(ring) <- colnames3
 
-  fp <- custom.fp1 %>%
+  # In Silico
+  insilico.smarts <- as.character(fpIndex$smarts[fpIndex$fpType == "insilico"])
+  colnames4 <- as.character(fpIndex$fpName[fpIndex$fpType == "insilico"])
+  insilico <- lapply(mols, get.fingerprint, type = "substructure", substructure.pattern = insilico.smarts)
+  insilico <- fp.to.matrix(insilico)
+  colnames(insilico) <- colnames4
+
+
+
+  # build model data
+ fp <- custom.fp1 %>%
     bind_cols(substructure) %>%
     bind_cols(maccs) %>%
     bind_cols(cactvs) %>%
     bind_cols(kroth) %>%
-    bind_cols(custom.fp2)
+    bind_cols(custom.fp2) %>%
+    bind_cols(ring) %>%
+    bind_cols(insilico)
 
   return(fp)
 
@@ -81,15 +94,18 @@ generate_fingerprints <- function(smiles) {
 
 
 
-#' Read SIRIUS fingerprints from a project directory
+#' Read SIRIUS v5.x fingerprints from a project directory
 #'
 #' This function imports posterior probabilities from files in the SIRIUS CSI:FingerID project directory.
 #'
+#' @description This function is deprecated and will be removed in a future version. Please use `read_sirius6_fingerprints()` instead for SIRIUS v6.x projects.
+#' @details Deprecated in v0.2.0 - SIRIUS v5.x is no longer supported. Please use `read_sirius6_fingerprints()` for SIRIUS v6.x projects.
 #' @param sirius_project_dir character; path to the SIRIUS project folder
 #' @param topMost logical; if TRUE, then only import the top 1 ranked candidate from each result
 #' @return a data frame with file, molecular_formula and posterior probability vectors (named by fingerprint column)
+#' @keywords internal
 #' @export
-read_sirius_fingerprints <- function(sirius_project_dir, topMost = TRUE) {
+read_sirius5_fingerprints <- function(sirius_project_dir, topMost = TRUE) {
 
   tmp <- make_temp_dir()
   on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
@@ -229,3 +245,75 @@ read_sirius_fingerprints <- function(sirius_project_dir, topMost = TRUE) {
 }
 
 
+
+
+#' Read SIRIUS fingerprints from active REST API
+#'
+#' This function imports posterior probabilities from HTTPS API started by SIRIUS v6.x. The API must be active and accessible at the specified URL.
+#'
+#' @param path character; path of .sirius project file or directory (if NULL, will attempt to connect to any open SIRIUS project)
+#' @param topMost logical; if TRUE, then only import the top 1 ranked candidate from each result
+#' @return a data frame with file, molecular_formula and posterior probability vectors (named by fingerprint column)
+#' @export
+read_sirius_fingerprints <- function(path = NULL, topMost = TRUE, charge = 1) {
+
+  # Create a local SDK object each call.
+  sdk <- SiriusSDK$new()
+  api <- NULL
+
+  # Try to attach to an existing SIRIUS instance first.
+  api <- tryCatch(
+    sdk$attach_to_sirius(sirius_major_version = 6),
+    error = function(e) NULL
+  )
+
+  if (!is.null(api)) {
+    healthy <- tryCatch(
+      api$actuator_api$Health()$status == "UP",
+      error = function(e) FALSE
+    )
+    if (!healthy) {
+      api <- NULL
+    }
+  }
+
+  # If not attached or unhealthy, start or attach-or-start.
+  if (is.null(api)) {
+    api <- tryCatch(
+      sdk$attach_or_start_sirius(),
+      error = function(e) NULL
+    )
+    if (is.null(api)) {
+      stop("Unable to connect to SIRIUS. Ensure SIRIUS is running or available in PATH; set SIRIUS_EXE if needed.")
+    }
+  }
+
+  project_id <- sirius_init(path, api)
+
+  # Get aligned features from the API
+  features <- api$features_api$GetAlignedFeatures(project_id)
+  cat("Found", length(features), "aligned features\n")
+  if (length(features) == 0) {
+    stop()
+  }
+
+  # Get the reference fp index from the project
+  # Its unclear if this changes depending on the presence/absence of fp in the data set
+  fingerid_data <- api$projects_api$GetFingerIdData(project_id, charge = charge)
+  fingerid_data$fpName <- paste0("Un", fingerid_data$absoluteIndex)
+
+  if (topMost == "formula") {
+    cat("Importing fingerprints for top-ranked formulas only\n")
+    top_fp <- extract_fingerprints(features, api, fingerid_data, project_id, topMost = "formula")
+    return(top_fp)
+} else if (topMost == "compound") {
+    cat("Importing fingerprints for top-ranked compounds only\n")
+    top_fp <- extract_fingerprints(features, api, fingerid_data, project_id, topMost = "compound")
+    return(top_fp)
+} else {
+    cat("Importing fingerprints for all candidates\n")
+    all_fp <- extract_fingerprints(features, api, fingerid_data, project_id, topMost = FALSE)
+    return(all_fp)
+    
+  }
+}

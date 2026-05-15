@@ -1,112 +1,112 @@
-scientific_name,common_name
-Acanthogobius flavimanus,Yellowfin goby
-Acanthopagrus schlegelii,Blackhead seabream
-Alburnus alburnus,Bleak
-Ameiurus melas,Black bullhead
-Ameiurus nebulosus,Brown bullhead
-Anguilla anguilla,European eel
-Anguilla japonica,Japanese eel
-Atherinops affinis,Topsmelt silverside
-Barbatula barbatula,Stone loach
-Belone belone,Garfish
-Brevoortia tyrannus,Atlantic menhaden
-Carassius auratus,Goldfish
-Chanos chanos,Milkfish
-Clarias anguillaris,Mudfish
-Clarias gariepinus,North African catfish
-Coptodon zillii,Redbelly tilapia
-Coregonus clupeaformis,Lake whitefish
-Coregonus fera,NA
-Ctenopharyngodon idella,Grass carp
-Cyprinodon variegatus,Sheepshead minnow
-Cyprinus carpio,Common carp
-Danio rerio,Zebra danio
-Dorosoma cepedianum,American gizzard shad
-Engraulis mordax,Californian anchovy
-Erimyzon sucetta,Lake chubsucker
-Fundulus heteroclitus,Mummichog
-Fundulus similis,Longnose killifish
-Gadus morhua,Atlantic cod
-Galaxias auratus,Golden Galaxias
-Gambusia affinis,Mosquitofish
-Gasterosteus aculeatus,Three-spined stickleback
-Gnathopogon caerulescens,NA
-Gobio gobio,Gudgeon
-Heteropneustes fossilis,Stinging catfish
-Hyphessobrycon bifasciatus,Yellow tetra
-Hypophthalmichthys nobilis,Bighead carp
-Ictalurus punctatus,Channel catfish
-Jordanella floridae,Flagfish
-Labeo rohita,Roho labeo
-Labidesthes sicculus,Brook silverside
-Lagodon rhomboides,Pinfish
-Leiostomus xanthurus,Spot croaker
-Lepomis cyanellus,Green sunfish
-Lepomis gibbosus,Pumpkinseed
-Lepomis macrochirus,Bluegill
-Lepomis megalotis,Longear sunfish
-Leuresthes tenuis,California grunion
-Lipophrys pholis,Shanny
-Leuciscus idus,Ide
-Limanda limanda,Common dab
-Lutjanus argentimaculatus,Mangrove red snapper
-Luxilus cornutus,Common shiner
-Melanotaenia nigrans,Blackbanded rainbowfish
-Menidia beryllina,Inland silverside
-Menidia menidia,Atlantic silverside
-Menidia peninsulae,Tidewater silverside
-Micropogonias undulatus,Atlantic croaker
-Micropterus salmoides,Largemouth black bass
-Misgurnus anguillicaudatus,Pond loach
-Morone saxatilis,Striped bass
-Moxostoma macrolepidotum,Shorthead redhorse
-Mugil cephalus,Flathead grey mullet
-Mugil curema,White mullet
-Myoxocephalus scorpius,Shorthorn sculpin
-Mystus gulio,Long whiskers catfish
-Notemigonus crysoleucas,Golden shiner
-Noturus miurus,Brindled madtom
-Odontesthes bonariensis,Argentinian silverside
-Oncorhynchus gorbuscha,Pink salmon
-Oncorhynchus kisutch,Coho salmon
-Oncorhynchus mykiss,Rainbow trout
-Oncorhynchus tshawytscha,Chinook salmon
-Opsanus beta,Gulf toadfish
-Oreochromis mossambicus,Mozambique tilapia
-Oreochromis niloticus,Nile tilapia
-Oryzias latipes,Japanese rice fish
-Pagrus major,Red seabream
-Periophthalmus waltoni,Walton's mudskipper
-Pethia ticto,Ticto barb
-Phoxinus phoxinus,Eurasian minnow
-Piaractus mesopotamicus,Pacu
-Pimephales promelas,Fathead minnow
-Planiliza haematocheilus,So-iuy mullet
-Platichthys stellatus,Starry flounder
-Platycephalus bassensis,Southern sand flathead
-Pleuronectes platessa,European plaice
-Poecilia latipinna,Sailfin molly
-Poecilia reticulata,Guppy
-Pomatoschistus minutus,Sand goby
-Pomoxis nigromaculatus,Black crappie
-Proterorhinus marmoratus,Tubenose goby
-Pseudorasbora parva,Stone moroko
-Pungitius pungitius,Ninespine stickleback
-Rhabdosargus holubi,Cape stumpnose
-Rudarius ercodes,Whitespotted pygmy filefish
-Rutilus rutilus,Roach
-Salmo salar,Atlantic salmon
-Salmo trutta,Sea trout
-Salvelinus fontinalis,Brook trout
-Salvelinus namaycush,Lake trout
-Sarotherodon galilaeus,Mango tilapia
-Scophthalmus maximus,Turbot
-Semotilus atromaculatus,Creek chub
-Sillago japonica,Japanese sillago
-Spinachia spinachia,Sea stickleback
-Tanichthys albonubes,White cloud mountain minnow
-Thymallus thymallus,Grayling
-Tilapia sparrmanii,Banded tilapia
-Trichomycterus zonatus,NA
-Trinectes maculatus,Hogchoker
-Zoarces viviparus,Eelpout
+scientific_name,common_name,n
+Acanthogobius flavimanus,Yellowfin goby,1
+Acanthopagrus schlegelii,Blackhead seabream,1
+Alburnus alburnus,Bleak,2
+Ameiurus melas,Black bullhead,2
+Ameiurus nebulosus,Brown bullhead,0
+Anguilla anguilla,European eel,1
+Anguilla japonica,Japanese eel,3
+Atherinops affinis,Topsmelt silverside,1
+Barbatula barbatula,Stone loach,1
+Belone belone,Garfish,1
+Brevoortia tyrannus,Atlantic menhaden,2
+Carassius auratus,Goldfish,77
+Chanos chanos,Milkfish,1
+Clarias anguillaris,Mudfish,1
+Clarias gariepinus,North African catfish,2
+Coptodon zillii,Redbelly tilapia,0
+Coregonus clupeaformis,Lake whitefish,1
+Coregonus fera,NA,1
+Ctenopharyngodon idella,Grass carp,5
+Cyprinodon variegatus,Sheepshead minnow,38
+Cyprinus carpio,Common carp,749
+Danio rerio,Zebra danio,78
+Dorosoma cepedianum,American gizzard shad,1
+Engraulis mordax,Californian anchovy,1
+Erimyzon sucetta,Lake chubsucker,0
+Fundulus heteroclitus,Mummichog,9
+Fundulus similis,Longnose killifish,3
+Gadus morhua,Atlantic cod,1
+Galaxias auratus,Golden Galaxias,1
+Gambusia affinis,Mosquitofish,45
+Gasterosteus aculeatus,Three-spined stickleback,3
+Gnathopogon caerulescens,NA,11
+Gobio gobio,Gudgeon,1
+Heteropneustes fossilis,Stinging catfish,1
+Hyphessobrycon bifasciatus,Yellow tetra,1
+Hypophthalmichthys nobilis,Bighead carp,3
+Ictalurus punctatus,Channel catfish,16
+Jordanella floridae,Flagfish,9
+Labeo rohita,Roho labeo,0
+Labidesthes sicculus,Brook silverside,3
+Lagodon rhomboides,Pinfish,7
+Leiostomus xanthurus,Spot croaker,8
+Lepomis cyanellus,Green sunfish,6
+Lepomis gibbosus,Pumpkinseed,1
+Lepomis macrochirus,Bluegill,77
+Lepomis megalotis,Longear sunfish,1
+Leuresthes tenuis,California grunion,0
+Lipophrys pholis,Shanny,1
+Leuciscus idus,Ide,44
+Limanda limanda,Common dab,2
+Lutjanus argentimaculatus,Mangrove red snapper,2
+Luxilus cornutus,Common shiner,0
+Melanotaenia nigrans,Blackbanded rainbowfish,1
+Menidia beryllina,Inland silverside,0
+Menidia menidia,Atlantic silverside,2
+Menidia peninsulae,Tidewater silverside,0
+Micropogonias undulatus,Atlantic croaker,1
+Micropterus salmoides,Largemouth black bass,6
+Misgurnus anguillicaudatus,Pond loach,5
+Morone saxatilis,Striped bass,7
+Moxostoma macrolepidotum,Shorthead redhorse,1
+Mugil cephalus,Flathead grey mullet,8
+Mugil curema,White mullet,2
+Myoxocephalus scorpius,Shorthorn sculpin,1
+Mystus gulio,Long whiskers catfish,1
+Notemigonus crysoleucas,Golden shiner,2
+Noturus miurus,Brindled madtom,0
+Odontesthes bonariensis,Argentinian silverside,3
+Oncorhynchus gorbuscha,Pink salmon,1
+Oncorhynchus kisutch,Coho salmon,8
+Oncorhynchus mykiss,Rainbow trout,217
+Oncorhynchus tshawytscha,Chinook salmon,1
+Opsanus beta,Gulf toadfish,0
+Oreochromis mossambicus,Mozambique tilapia,9
+Oreochromis niloticus,Nile tilapia,4
+Oryzias latipes,Japanese rice fish,120
+Pagrus major,Red seabream,6
+Periophthalmus waltoni,Walton's mudskipper,4
+Pethia ticto,Ticto barb,4
+Phoxinus phoxinus,Eurasian minnow,4
+Piaractus mesopotamicus,Pacu,0
+Pimephales promelas,Fathead minnow,121
+Planiliza haematocheilus,So-iuy mullet,2
+Platichthys stellatus,Starry flounder,6
+Platycephalus bassensis,Southern sand flathead,1
+Pleuronectes platessa,European plaice,4
+Poecilia latipinna,Sailfin molly,3
+Poecilia reticulata,Guppy,137
+Pomatoschistus minutus,Sand goby,1
+Pomoxis nigromaculatus,Black crappie,0
+Proterorhinus marmoratus,Tubenose goby,1
+Pseudorasbora parva,Stone moroko,18
+Pungitius pungitius,Ninespine stickleback,1
+Rhabdosargus holubi,Cape stumpnose,1
+Rudarius ercodes,Whitespotted pygmy filefish,6
+Rutilus rutilus,Roach,1
+Salmo salar,Atlantic salmon,18
+Salmo trutta,Sea trout,4
+Salvelinus fontinalis,Brook trout,6
+Salvelinus namaycush,Lake trout,9
+Sarotherodon galilaeus,Mango tilapia,0
+Scophthalmus maximus,Turbot,9
+Semotilus atromaculatus,Creek chub,1
+Sillago japonica,Japanese sillago,8
+Spinachia spinachia,Sea stickleback,1
+Tanichthys albonubes,White cloud mountain minnow,32
+Thymallus thymallus,Grayling,1
+Tilapia sparrmanii,Banded tilapia,3
+Trichomycterus zonatus,NA,1
+Trinectes maculatus,Hogchoker,1
+Zoarces viviparus,Eelpout,2

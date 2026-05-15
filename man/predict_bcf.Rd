@@ -5,17 +5,18 @@
 \title{Predict bioconcentration factor (BCF)}
 \usage{
 predict_bcf(
-  x,
+  x = NULL,
   input = c("smiles", "sirius"),
   species = "Cyprinus carpio",
-  threshold = c("mc"),
-  topMost = TRUE,
+  threshold = "mc",
+  topMost = c("formula", "compound", "all"),
   N = 10000,
-  cutoff = 0.5
+  cutoff = 0.5,
+  charge = 1
 )
 }
 \arguments{
-\item{x}{Character vector of SMILES or a file path to a SIRIUS project.}
+\item{x}{Character vector of SMILES (when input="smiles") or path to SIRIUS project directory (when input="sirius"). If NULL and input="sirius", selects an open SIRIUS project interactively.}
 
 \item{input}{Character string, either "smiles" or "sirius".}
 
@@ -28,10 +29,11 @@ predict_bcf(
 
 \item{N}{integer; if threshold = "mc" this number specifies the number of Monte Carlo simulations performed. Higher iterations take longer.}
 
-\item{cutoff}{double; if threshold = "mc" this ratio specifies the cutoff after MC simulation.}
+\item{cutoff}{double; if threshold = "mc" this ratio specifies the cutoff after MC simulation.
+.@param charge integer; if input = "sirius", this specifies the charge state of the features to be predicted. Default is 1.}
 }
 \value{
-A data.frame containing the original input and predicted BCF.
+A data.frame containing the original input, predicted BCF, and applicability domain.
 }
 \description{
 Top-level wrapper to predict BCF from either SMILES strings or a SIRIUS
@@ -39,8 +41,9 @@ project directory. Internally generates fingerprints, applies the trained
 XGBoost model, and optionally performs Monte Carlo thresholding.
 }
 \examples{
+# predict BCF from SMILES
 predict_bcf(
-  x = c("CCO", "CC(=O)O"),
+  x = c("CCNC1=NC(=NC(=N1)Cl)NC(C)C", "CCNC1=NC(=NC(=N1)Cl)NCC"), # atrazine and simazine
   input = "smiles",
   species = "Cyprinus carpio"
 )

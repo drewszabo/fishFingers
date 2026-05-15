@@ -2,12 +2,12 @@
 % Please edit documentation in R/fingerprints.R
 \name{read_sirius_fingerprints}
 \alias{read_sirius_fingerprints}
-\title{Read SIRIUS fingerprints from a project directory}
+\title{Read SIRIUS fingerprints from active REST API}
 \usage{
-read_sirius_fingerprints(sirius_project_dir, topMost = TRUE)
+read_sirius_fingerprints(path = NULL, topMost = TRUE, charge = 1)
 }
 \arguments{
-\item{sirius_project_dir}{character; path to the SIRIUS project folder}
+\item{path}{character; path of .sirius project file or directory (if NULL, will attempt to connect to any open SIRIUS project)}
 
 \item{topMost}{logical; if TRUE, then only import the top 1 ranked candidate from each result}
 }
@@ -15,5 +15,5 @@ read_sirius_fingerprints(sirius_project_dir, topMost = TRUE)
 a data frame with file, molecular_formula and posterior probability vectors (named by fingerprint column)
 }
 \description{
-This function imports posterior probabilities from files in the SIRIUS CSI:FingerID project directory.
+This function imports posterior probabilities from HTTPS API started by SIRIUS v6.x. The API must be active and accessible at the specified URL.
 }
