@@ -24,14 +24,8 @@ appdomain <- function(fingerprints) {
 
   rawdata <- read.csv(rawdata_path, check.names = FALSE)
 
-  # Load fpIndex to get fingerprint column names
-  fp_index_path <- system.file(
-    "extdata",
-    "fpIndex_v2.0.csv",
-    package = "fishFingers"
-  )
-  fpIndex <- read.csv(fp_index_path, check.names = FALSE)
-  fp_names <- fpIndex$fpName[fpIndex$fpType != "ecfp6"]
+  fpFinal <- read.csv(system.file("extdata", "final_fps.csv", package = "fishFingers"), check.names = FALSE)
+  fp_names <- fpFinal$fpName
 
   # Extract training fingerprints
   train_fingerprints <- as.matrix(rawdata[, fp_names])

@@ -79,8 +79,9 @@ predict_bcf <- function(
     "fpIndex_v2.0.csv",
     package = "fishFingers"
   )
+  fpFinal <- read.csv(system.file("extdata", "final_fps.csv", package = "fishFingers"), check.names = FALSE)
   fpIndex <- read.csv(fp_index_path, check.names = FALSE)
-  fp_names <- fpIndex$fpName[fpIndex$fpType != "ecfp6"]
+  fp_names <- fpFinal$fpName
 
   species_path <- system.file(
     "extdata",
