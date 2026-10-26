@@ -2,6 +2,8 @@
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
+Version 0.3.0 Published in ES&T Toxicology DOI: [https://doi.org/10.1021/acsesttox.6c00068](https://doi.org/10.1021/acsesttox.6c00068)
+
 ## Overview
 fishFingers is a non-targeted screening prioritisation tool for high-resolution mass spectrometry data. It allows for the prediction of bioconcentration factors (BCF) in over 100 species of fish using structural fingerprints derived from tandem mass spectrometry data (MS2).
 
@@ -67,7 +69,7 @@ pred <- predict_bcf("sirius", threshold = "mc", N = 10000)
 ## Applicability Domain Assessment
 During BCF prediction generation, the chemical applicability domain (chemical space) of new compounds are calculated using Tanimoto similarity between the strucutral fingerprints of the target and training chemicals.
 
-Tanimoto similarity ranges from 0 (completely dissimilar) to 1 (identical). Compounds with higher similarity scores are within the training domain and predictions are more reliable. Scores above 0.8 are annoatated as "good" similarity, and scores above 0.6 are annotated as "fair" similarity. Scores between 0.0 and 0.6 are annotated as "poor" and the predicted BCF should be interpreted with caution.
+Tanimoto similarity ranges from 0 (completely dissimilar) to 1 (identical). Compounds with higher similarity scores are within the training domain and predictions are more reliable. Scores above 0.9 are annoatated as "good" similarity, and scores above 0.75 are annotated as "fair" similarity. Scores between 0.0 and 0.75 are annotated as "poor" and the predicted BCF should be interpreted with caution.
 
 ## General input requirements
 * SMILES should be valid and parseable by rcdk (use `webchem::is.smiles()` to check your strings beforehand).
