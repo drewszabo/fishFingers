@@ -6,15 +6,12 @@
 #' @return data.frame of SMILES and 2691 structural fingerprints
 #' @export
 generate_fingerprints <- function(smiles) {
-  
 
-  fp_index_path <- system.file( # find path to fpIndex
-    "extdata",
-    "fpIndex_v2.0.csv",
-    package = "fishFingers"
-  )
+  # Load reference fingerprint data and filter index
+  fpFinal <- read.csv(system.file("extdata", "final_fps.csv", package = "fishFingers"), check.names = FALSE)
+  fpIndex <- read.csv(system.file("extdata", "fpIndex_v2.0.csv", package = "fishFingers"), check.names = FALSE)
+  fpIndex <- fpIndex[fpIndex$fpName %in% fpFinal$fpName, ]
 
-  fpIndex <- read.csv(fp_index_path, check.names = FALSE)
 
   # get mols from SMILES
   mols <- parse.smiles(smiles) # parse SMILES to S4 object
